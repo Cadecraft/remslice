@@ -4,7 +4,8 @@ use crate::utils;
 /// The data and methods for Rem
 pub struct Rem {
     rem_data: remdata::RemData,
-    ping_count: u32
+    ping_count: u32,
+    to_copy_val: String
 }
 
 impl Rem {
@@ -12,7 +13,8 @@ impl Rem {
     pub fn new(rem_data: remdata::RemData) -> Rem {
         Rem {
             rem_data,
-            ping_count: 0
+            ping_count: 0,
+            to_copy_val: "[empty]".to_string()
         }
     }
 
@@ -45,6 +47,14 @@ impl Rem {
             "wipe" => {
                 // Wipe
                 self.run_wipe_screen();
+            },
+            "cd" if parsed.len() == 1 => {
+                // Print the current working directory
+                println!("{}", utils::get_current_working_dir());
+            },
+            "copy" => {
+                // Try to copy whatever is in the copy val
+                utils::copy_to_clipboard(&self.to_copy_val);
             },
             "exit" | "quit" | "q" => {
                 // Exit immediately
@@ -98,27 +108,12 @@ impl Rem {
         }
         total_score /= divide_by;
         daily_score_disp.push_str(&format!(") / {} = {}", divide_by, total_score));
+        self.to_copy_val = daily_score_disp.clone();
         // Create the score report
         println!("Today's daily score:");
         println!("{}", daily_score_disp);
         // Options: copy, continue, restart, edit
-        println!("[c] copy report, [r] restart, [enter] continue");
-        let uin = utils::get_user_input_line();
-        let parsed: Vec<String> = Self::parse_input(uin);
-        // Respond based on the input
-        match Self::argument_at_index(&parsed, 0) {
-            "c" => {
-                // Copy
-                // TODO: impl
-            },
-            "r" => {
-                // Restart (call again)
-                self.run_score();
-            },
-            _ => {
-                // Continue
-            }
-        }
+        println!("To copy the report, enter `copy`");
     }
 
     /// Run action: wipe the screen

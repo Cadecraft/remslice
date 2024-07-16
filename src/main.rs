@@ -13,12 +13,13 @@ mod rem;
     rem config
     rem logger
     randomized responses
-    initial access password (encrypt somehow?) (?)
+    initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
     feat: wipe screen command
     feat: search through todos (make api)
     feat: search through utility/to remember lists
     feat: help command
     add to path
+    test installing and copying on linux
 */
 
 fn main() {
@@ -26,10 +27,7 @@ fn main() {
     let rem_data = remdata::RemData::new("0.1.0", "2024/07/16", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
-    // Welcome to program (brief)
-    println!("REMSLICE ({})", rem_data.to_string());
-
-    // Begin the input loop
+    // Begin the input loop immediately
     loop {
         // TODO: get user input
         // TODO: have rem respond to user input

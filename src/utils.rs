@@ -1,6 +1,9 @@
 // Utilities for remslice
 
 use std::io::{stdin, stdout, Write};
+use std::env;
+
+use cli_clipboard;
 
 /// Get the user's input
 pub fn get_user_input_line() -> String {
@@ -40,3 +43,32 @@ pub fn await_enter() {
     let mut uin = String::new();
     stdin().read_line(&mut uin).expect("ERR: failed to read line");
 }
+
+/// Get the current working directory
+pub fn get_current_working_dir() -> String {
+    let res = env::current_dir();
+    match res {
+        Ok(path) => {
+            path.into_os_string().into_string().unwrap()
+        },
+        _ => {
+            "FAILED".to_string()
+        }
+    }
+}
+
+/// Copy a string to the clipboard
+pub fn copy_to_clipboard(s: &str) -> bool {
+    match cli_clipboard::set_contents(s.to_owned()) {
+        Ok(_) => {
+            // Success
+            true
+        },
+        Err(_err) => {
+            // Failure
+            // TODO: handle?
+            false
+        }
+    }
+}
+
