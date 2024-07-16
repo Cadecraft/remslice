@@ -6,15 +6,19 @@ mod utils;
 mod rem;
 
 /* TODO:
+    remote github repo
     allow intaking a file as an argument, or taking flags
     store past commands and allow arrow up/down to move between them
     colors with crossterm?
     rem config
     rem logger
     randomized responses
+    initial access password (encrypt somehow?) (?)
+    feat: wipe screen command
     feat: search through todos (make api)
     feat: search through utility/to remember lists
     feat: help command
+    add to path
 */
 
 fn main() {
