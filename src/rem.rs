@@ -69,6 +69,18 @@ impl Rem {
                 // Grep
                 self.run_grep(parsed[1].clone());
             },
+            "tda" if parsed.len() >= 2 => {
+                // Add a todo
+                // TODO: capitalization and spacing
+                let mut ending = String::new();
+                for i in 1..parsed.len() {
+                    if i != 1 {
+                        ending.push(' ');
+                    }
+                    ending.push_str(&parsed[i]);
+                }
+                self.run_tda(ending);
+            }
             "print" => {
                 // Print the file
                 println!("{}", self.file_loaded);
@@ -81,6 +93,10 @@ impl Rem {
                 // Exit immediately
                 // TODO: allow other return types (enum for this function's return)
                 return true;
+            },
+            "time" => {
+                // Get the current time
+                println!("{}", utils::get_time_formatted());
             },
             _ => {
                 // No match
@@ -194,6 +210,16 @@ impl Rem {
         }
         if !success {
             println!("I found no results in the file.");
+        }
+    }
+
+    /// Run action: todo add
+    fn run_tda(&mut self, s: String) {
+        // Append to the end of todos
+        if utils::append_to_file(&self.config.get_todo_path(), &format!("- {}", s)) {
+            println!("Todo added successfully");
+        } else {
+            println!("Todo could not be added");
         }
     }
 

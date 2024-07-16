@@ -5,6 +5,7 @@ use std::env;
 use std::fs;
 
 use cli_clipboard;
+use chrono;
 
 /// Get the user's input
 pub fn get_user_input_line() -> String {
@@ -83,4 +84,35 @@ pub fn read_file(path: &str) -> Option<String> {
             None
         }
     }
+}
+
+/// Append to a file given its path, if possible, and return whether successful
+pub fn append_to_file(path: &str, to_write: &str) -> bool {
+    let mut file =  fs::OpenOptions::new().write(true).append(true).open(path);
+    match file {
+        Ok(mut fileval) => {
+            // Append the new line
+            if let Err(_e) = writeln!(fileval, "{}", to_write) {
+                // TODO: handle error better
+                false
+            } else {
+                true
+            }
+        },
+        _ => {
+            // Failure
+            false
+        }
+    }
+}
+
+/// Get the current local time
+fn get_time() -> chrono::DateTime<chrono::Local> {
+    chrono::Local::now()
+}
+
+/// Get the current local time, formatted
+pub fn get_time_formatted() -> String {
+    let thetime = get_time();
+    thetime.format("%Y/%m/%d %H:%M").to_string()
 }

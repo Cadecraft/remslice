@@ -40,16 +40,18 @@ tip anothertip C:/Other/Path/anotherthing.txt
 ## Misc. Commands
 - `bye` - exit with a farewell message
 - `ping` - pong!
-- `copy` - copy the last copyable message sent
+- `wipe` - wipe the screen
+- `time` - display the current time
+- `copy` - copy the last copyable message sent (generally used after `score`)
 
 <!-- TODO: list all -->
 
 ## Procedure/Action Commands
 - `score` - generate a daily score based on input prompts
-- `wipe` - wipe the screen
 - `tip {nickname}` - load a file based on its defined nickname (searches for the first one starting with the argument) (note: `b` is synonymous with `tip`)
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
+- `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 
 ## Etymology?
 
