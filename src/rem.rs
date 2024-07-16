@@ -1,11 +1,14 @@
 use crate::remdata;
 use crate::utils;
+use crate::config::Config;
 
 /// The data and methods for Rem
 pub struct Rem {
     rem_data: remdata::RemData,
     ping_count: u32,
-    to_copy_val: String
+    to_copy_val: String,
+    file_loaded: String,
+    config: Config
 }
 
 impl Rem {
@@ -14,7 +17,9 @@ impl Rem {
         Rem {
             rem_data,
             ping_count: 0,
-            to_copy_val: "[empty]".to_string()
+            to_copy_val: "[empty]".to_string(),
+            file_loaded: String::new(),
+            config: Config::new()
         }
     }
 
@@ -52,6 +57,18 @@ impl Rem {
                 // Print the current working directory
                 println!("{}", utils::get_current_working_dir());
             },
+            "tip" if parsed.len() >= 3 => {
+                // Tip and grep
+                self.run_tip(parsed[1].clone(), Some(parsed[2].clone()));
+            },
+            "tip" if parsed.len() == 2 => {
+                // Tip
+                self.run_tip(parsed[1].clone(), None);
+            },
+            "grep" if parsed.len() >= 2 => {
+                // Grep
+                self.run_grep(parsed[1].clone());
+            }
             "copy" => {
                 // Try to copy whatever is in the copy val
                 utils::copy_to_clipboard(&self.to_copy_val);
@@ -107,7 +124,7 @@ impl Rem {
             daily_score_disp.push_str(&format!(" - {:.2}", uin));
         }
         total_score /= divide_by;
-        daily_score_disp.push_str(&format!(") / {} = {}", divide_by, total_score));
+        daily_score_disp.push_str(&format!(") / {} = {:.2}", divide_by, total_score));
         self.to_copy_val = daily_score_disp.clone();
         // Create the score report
         println!("Today's daily score:");
@@ -123,6 +140,57 @@ impl Rem {
             println!();
         }
         println!("The screen is clear!");
+    }
+
+    /// Run action: tip
+    fn run_tip(&mut self, key: String, grepval: Option<String>) {
+        // Search for the given file and display it, so a tip can be found
+        match self.config.get_tip_value(&key) {
+            Some(tip_value) => {
+                // Open and load the file, if possible
+                match utils::read_file(&tip_value) {
+                    Some(thecontents) => {
+                        // Load the file
+                        self.file_loaded = thecontents.clone();
+                        println!("The file at {} is loaded into the buffer.", tip_value);
+                        match grepval {
+                            // Automatically grep
+                            Some(query) => {
+                                self.run_grep(query);
+                            },
+                            _ => {
+                                println!("Consider using `grep` or `print`");
+                            }
+                        }
+                    },
+                    _ => {
+                        println!("The file pointed to doesn't exist");
+                    }
+                }
+            },
+            _ => {
+                // Failed
+                println!("The tip doesn't exist");
+            }
+        }
+    }
+
+    /// Run action: grep
+    fn run_grep(&mut self, query: String) {
+        // Search the file for lines including it
+        let mut success: bool = false;
+        println!("Searching...");
+        for (i, line) in self.file_loaded.lines().enumerate() {
+            // Match?
+            if line.to_lowercase().find(&query).is_some() {
+                // Found
+                println!("{:5} {}", i, line);
+                success = true;
+            }
+        }
+        if !success {
+            println!("I found no results in the file.");
+        }
     }
 
     /// Get the argument at an index of the input

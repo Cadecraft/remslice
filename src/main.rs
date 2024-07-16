@@ -4,6 +4,7 @@
 mod remdata;
 mod utils;
 mod rem;
+mod config;
 
 /* TODO:
     remote github repo
@@ -14,7 +15,9 @@ mod rem;
     rem logger
     randomized responses
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
-    feat: wipe screen command
+    config based on remrc (for tip files, remrc path, etc.)
+    feat: tip
+    feat: help command
     feat: search through todos (make api)
     feat: search through utility/to remember lists
     feat: help command
@@ -24,7 +27,7 @@ mod rem;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.1.0", "2024/07/16", true);
+    let rem_data = remdata::RemData::new("0.2.0", "2024/07/16", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately
