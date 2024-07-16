@@ -16,6 +16,8 @@ mod config;
     randomized responses
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
     config based on remrc (for tip files, remrc path, etc.)
+    refactor: move file operations, grep, etc. into a separate struct
+    feat: copy file path from tip
     feat: tip
     feat: help command
     feat: search through todos (make api)

@@ -57,18 +57,22 @@ impl Rem {
                 // Print the current working directory
                 println!("{}", utils::get_current_working_dir());
             },
-            "tip" if parsed.len() >= 3 => {
+            "tip" | "b" if parsed.len() >= 3 => {
                 // Tip and grep
                 self.run_tip(parsed[1].clone(), Some(parsed[2].clone()));
             },
-            "tip" if parsed.len() == 2 => {
+            "tip" | "b" if parsed.len() == 2 => {
                 // Tip
                 self.run_tip(parsed[1].clone(), None);
             },
             "grep" if parsed.len() >= 2 => {
                 // Grep
                 self.run_grep(parsed[1].clone());
-            }
+            },
+            "print" => {
+                // Print the file
+                println!("{}", self.file_loaded);
+            },
             "copy" => {
                 // Try to copy whatever is in the copy val
                 utils::copy_to_clipboard(&self.to_copy_val);
