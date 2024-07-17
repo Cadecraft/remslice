@@ -88,7 +88,7 @@ pub fn read_file(path: &str) -> Option<String> {
 
 /// Append to a file given its path, if possible, and return whether successful
 pub fn append_to_file(path: &str, to_write: &str) -> bool {
-    let mut file =  fs::OpenOptions::new().write(true).append(true).open(path);
+    let file =  fs::OpenOptions::new().write(true).append(true).open(path);
     match file {
         Ok(mut fileval) => {
             // Append the new line

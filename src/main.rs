@@ -24,13 +24,14 @@ mod config;
     feat: search through utility/to remember lists
     feat: help command
     feat: tda (ToDoAppend)
+    feat: reminders (have timing, store in file, maybe even use notifications)
     add to path
     test installing and copying on linux
 */
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.3.0", "2024/07/16", true);
+    let rem_data = remdata::RemData::new("0.3.1", "2024/07/17", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

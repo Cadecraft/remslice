@@ -1,3 +1,5 @@
+use crate::utils;
+
 /// Stores a tip key/value pair
 struct TipPair {
     key: String,
@@ -30,22 +32,64 @@ impl Config {
     }
 
     /// Load the config from the remrc
-    pub fn load(&mut self) {
-        // TODO: read
-        // TODO: load tips
-        // TODO: remove this test debug thing here
-        self.tips.push(TipPair {
-            key: "vimtoremember".to_string(),
-            value: "C:/Cade/PDFs/Utility/ToRememberDocs/VimToRemember.md".to_string()
-        });
-        self.tips.push(TipPair {
-            key: "shortcutstoremember".to_string(),
-            value: "C:/Cade/PDFs/Utility/ToRememberDocs/ShortcutsToRemember.md".to_string()
-        });
-        self.tips.push(TipPair {
-            key: "testtodos".to_string(),
-            value: "C:/Cade/Java/testtodos.txt".to_string()
-        });
+    pub fn load(&mut self) -> bool {
+        // Read the file
+        match utils::read_file(&self.remrc_path) {
+            Some(contents) => {
+                // Parse contents
+                for line in contents.lines() {
+                    if line.trim().is_empty() || line.trim().chars().nth(0).unwrap() == '#' {
+                        // Empty line or comment
+                        continue;
+                    }
+                    // Parse this line
+                    let parsed: Vec<&str> = line.trim().split(" ").collect::<Vec<&str>>();
+                    match parsed[0].trim() {
+                        "tip" if parsed.len() >= 3 => {
+                            // Add a tip
+                            // TODO: test file paths with spaces
+                            let mut spacegaps = 0;
+                            let mut userpath = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 2 {
+                                    userpath.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.tips.push(TipPair {
+                                key: parsed[1].trim().to_string(),
+                                value: userpath
+                            });
+                        },
+                        "todo" if parsed.len() >= 2 => {
+                            // Set the todo path
+                            // TODO: test file paths with spaces
+                            let mut spacegaps = 0;
+                            let mut userpath = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 1 {
+                                    userpath.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.todo_path = parsed[1].trim().to_string()
+                        },
+                        _ => {
+                            // None
+                        }
+                    }
+                }
+                // Success
+                return true;
+            },
+            _ => {
+                // Failed
+                return false;
+            }
+        }
+        // TODO: ensure spaces are preserved in the path arguments (since they're the last argument, it should work out)
     }
 
     /// Get the value of a tip starting with a key
