@@ -60,7 +60,9 @@ todo C:/Cade/Java/testtodos.txt
 - `ping` - pong!
 - `wipe` - wipe the screen
 - `time` - display the current time
-- `copy` - copy the last copyable message sent (generally used after `score`)
+- `copy`/`y` - copy ("yank") the last copyable message sent to the system clipboard (generally used after `score`)
+- `paste`/`p` - display the contents of the system clipboard
+- `pasterun!`/`pr!` - run the contents of the system clipboard as a command input to rem (dangerous--`paste` first to see contents!)
 
 <!-- TODO: list all -->
 

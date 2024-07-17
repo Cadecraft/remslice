@@ -85,9 +85,40 @@ impl Rem {
                 // Print the file
                 println!("{}", self.file_loaded);
             },
-            "copy" => {
+            "copy" | "y" => {
                 // Try to copy whatever is in the copy val
                 utils::copy_to_clipboard(&self.to_copy_val);
+                if self.to_copy_val.chars().count() > 6 {
+                    println!("Yanked string starting with '{}'", &self.to_copy_val[..4]);
+                } else {
+                    println!("Yanked string '{}'", self.to_copy_val);
+                }
+            },
+            "paste" | "p" => {
+                // Try to paste whatever is in the clipboard val
+                match utils::paste_from_clipboard() {
+                    Some(contents) => {
+                        println!("{}", contents);
+                    },
+                    _ => {
+                        println!("Couldn't paste the clipboard contents");
+                    }
+                }
+            },
+            "pasterun!" | "pr!" => {
+                // Try to run whatever is in the clipboard
+                match utils::paste_from_clipboard() {
+                    Some(contents) => {
+                        println!("Running: `{}`", contents);
+                        if self.respond_to_input(contents) {
+                            // Should quit
+                            return true;
+                        }
+                    },
+                    _ => {
+                        println!("Couldn't paste the clipboard contents");
+                    }
+                }
             },
             "exit" | "quit" | "q" => {
                 // Exit immediately

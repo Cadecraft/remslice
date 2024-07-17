@@ -74,6 +74,21 @@ pub fn copy_to_clipboard(s: &str) -> bool {
     }
 }
 
+/// Get a string from the clipboard
+pub fn paste_from_clipboard() -> Option<String> {
+    match cli_clipboard::get_contents() {
+        Ok(contents) => {
+            // Success
+            Some(contents)
+        },
+        Err(_err) => {
+            // Failure
+            // TODO: handle?
+            None
+        }
+    }
+}
+
 /// Get the contents of a file given its path, if possible
 pub fn read_file(path: &str) -> Option<String> {
     match fs::read_to_string(path) {
