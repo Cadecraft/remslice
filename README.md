@@ -52,8 +52,9 @@ todo C:/Cade/Java/testtodos.txt
 
 ## System Commands
 - `exit`/`quit`/`q` - exit immediately
-- `version`/`ver` - display the version information
-- `cd` - display the current working directory
+- `version`/`ver` - display simple version information
+- `remfetch` - aesthetically display more version information (think neofetch)
+- `pwd` - display the current working directory
 
 ## Misc. Commands
 - `bye` - exit with a farewell message
@@ -72,6 +73,10 @@ todo C:/Cade/Java/testtodos.txt
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
+
+## More
+
+This was developed using the `rebelot/kanagawa.nvim` theme.
 
 ## Etymology?
 

@@ -5,12 +5,13 @@ mod remdata;
 mod utils;
 mod rem;
 mod config;
+mod remfetch;
 
 /* TODO:
     remote github repo
     allow intaking a file as an argument, or taking flags
     store past commands and allow arrow up/down to move between them
-    colors with crossterm?
+    colors with `crossterm`? `colored`?
     rem config
     rem logger
     randomized responses
@@ -25,6 +26,7 @@ mod config;
     feat: help command
     feat: tda (ToDoAppend)
     feat: reminders (have timing, store in file, maybe even use notifications)
+    feat: display size of log, uptime, etc. in remfetch
     add to path
     test installing and copying on linux
 */

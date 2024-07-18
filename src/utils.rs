@@ -3,6 +3,7 @@
 use std::io::{stdin, stdout, Write};
 use std::env;
 use std::fs;
+use std::env::consts::OS;
 
 use cli_clipboard;
 use chrono;
@@ -130,4 +131,9 @@ fn get_time() -> chrono::DateTime<chrono::Local> {
 pub fn get_time_formatted() -> String {
     let thetime = get_time();
     thetime.format("%Y/%m/%d %H:%M").to_string()
+}
+
+/// Get the current operating system
+pub fn get_os() -> String {
+    OS.to_string()
 }

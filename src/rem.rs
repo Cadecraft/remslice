@@ -1,6 +1,7 @@
 use crate::remdata;
 use crate::utils;
 use crate::config::Config;
+use crate::remfetch;
 
 /// The data and methods for Rem
 pub struct Rem {
@@ -34,9 +35,12 @@ impl Rem {
                 self.run_score();
             },
             "version" | "ver" => {
-                // Version
-                // TODO: impl
+                // Simple version information
                 println!("REMSLICE ({})", self.rem_data.to_string())
+            },
+            "remfetch" => {
+                // Remfetch
+                println!("{}", remfetch::remfetch(&self.rem_data));
             },
             "bye" => {
                 // Message and quit
@@ -53,7 +57,7 @@ impl Rem {
                 // Wipe
                 self.run_wipe_screen();
             },
-            "cd" if parsed.len() == 1 => {
+            "pwd" if parsed.len() == 1 => {
                 // Print the current working directory
                 println!("{}", utils::get_current_working_dir());
             },

@@ -33,4 +33,19 @@ impl RemData {
             morning_star: self.morning_star
         }
     }
+
+    /// Get the recent verison
+    pub fn get_r(&self) -> String {
+        self.recent_version.clone()
+    }
+
+    /// Get the edit date
+    pub fn get_e(&self) -> String {
+        self.edit_date.clone()
+    }
+
+    /// Get the morning star
+    pub fn get_m(&self) -> bool {
+        self.morning_star
+    }
 }
