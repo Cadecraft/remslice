@@ -14,7 +14,7 @@ pub struct Config {
 }
 
 impl Config {
-    // TODO: allow user to define the remrc path
+    // TODO: allow user to define the remrc path? Some system-level environment variable?
     /// Make a new Config
     pub fn new() -> Config {
         let mut c = Config {

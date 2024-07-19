@@ -142,6 +142,14 @@ impl Rem {
         false
     }
 
+    /// Run action: help
+    fn run_help(&mut self) {
+        println!("A detailed list of all commands can be found in `README.md`;");
+        println!("please check it out for the features and cool stuff!");
+        println!("- `exit`/`quit`/`q` - exit immediately");
+        println!("- `version`/`ver` - display simple version information");
+    }
+
     /// Run action: score calculation
     fn run_score(&mut self) {
         // TODO: impl

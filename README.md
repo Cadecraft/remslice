@@ -55,6 +55,7 @@ todo C:/Cade/Java/testtodos.txt
 - `version`/`ver` - display simple version information
 - `remfetch` - aesthetically display more version information (think neofetch)
 - `pwd` - display the current working directory
+- `help` - display a simple help screen that points to this README file
 
 ## Misc. Commands
 - `bye` - exit with a farewell message
