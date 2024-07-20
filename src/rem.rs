@@ -53,6 +53,10 @@ impl Rem {
                 self.ping_count += 1;
                 println!("pong! (x{})", self.ping_count);
             },
+            "help" => {
+                // Help
+                self.run_help();
+            },
             "wipe" => {
                 // Wipe
                 self.run_wipe_screen();
@@ -71,7 +75,15 @@ impl Rem {
             },
             "grep" if parsed.len() >= 2 => {
                 // Grep
-                self.run_grep(parsed[1].clone());
+                // TODO: better spacing support
+                let mut ending = String::new();
+                for i in 1..parsed.len() {
+                    if i != 1 {
+                        ending.push(' ');
+                    }
+                    ending.push_str(&parsed[i]);
+                }
+                self.run_grep(ending);
             },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
@@ -84,7 +96,7 @@ impl Rem {
                     ending.push_str(&parsed[i]);
                 }
                 self.run_tda(ending);
-            }
+            },
             "print" => {
                 // Print the file
                 println!("{}", self.file_loaded);

@@ -8,23 +8,20 @@ mod config;
 mod remfetch;
 
 /* TODO:
-    remote github repo
+    somewhere to download the binaries? auth pw for score or other sensitive features?
     allow intaking a file as an argument, or taking flags
     store past commands and allow arrow up/down to move between them
     colors with `crossterm`? `colored`?
-    rem config
     rem logger
-    randomized responses
+    randomized responses to certain commands?
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
-    config based on remrc (for tip files, remrc path, etc.)
+    figure out how to store the remrc path so users can adjust it (needed?); otherwise, src must be edited
     refactor: move file operations, grep, etc. into a separate struct
     feat: copy file path from tip
     feat: tip
-    feat: help command
-    feat: search through todos (make api)
-    feat: search through utility/to remember lists
-    feat: help command
-    feat: tda (ToDoAppend)
+    feat: search through todos (make api?)
+    feat: strikethrough todos?
+    feat: print only the end of a file
     feat: reminders (have timing, store in file, maybe even use notifications)
     feat: display size of log, uptime, etc. in remfetch
     add to path
