@@ -8,6 +8,9 @@ use std::env::consts::OS;
 use cli_clipboard;
 use chrono;
 
+// Keep the line ending '\n' for consistency in editing files
+const LINE_ENDING: &'static str = "\n";
+
 /// Get the user's input
 pub fn get_user_input_line() -> String {
     print!("> ");
