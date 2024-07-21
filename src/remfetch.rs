@@ -23,20 +23,5 @@ pub fn remfetch(current_remdata: &remdata::RemData) -> String {
     res.push_str(&format!("     -===  |  =====-                   \n"));
     res.push_str(&format!("         -===-                         \n"));
     res.push_str(&format!("                                       \n"));
-    /*res.push_str(&format!("                                       REMSLICE"));
-    res.push_str(&format!("                                       --------"));
-    res.push_str(&format!("                                       REM: Recent Version: {}", current_remdata.get_r()));
-    res.push_str(&format!("                                       REM: Edit Date:      {}", current_remdata.get_e()));
-    res.push_str(&format!("                                       REM: Morning Star:   {}", current_morningstar));
-    res.push_str(&format!("                                       Current Time:        {}", utils::get_time_formatted()));
-    res.push_str(&format!("                                       OS: {}", utils::get_os()));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));
-    res.push_str(&format!("                                       "));*/
     res
 }

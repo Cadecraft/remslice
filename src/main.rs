@@ -30,7 +30,7 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.3.2", "2024/07/19", true);
+    let rem_data = remdata::RemData::new("0.3.3", "2024/07/21", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

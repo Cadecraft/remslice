@@ -27,7 +27,7 @@ impl Rem {
     /// Respond to a raw user-inputted string and return whether the program should quit
     pub fn respond_to_input(&mut self, input: String) -> bool {
         // Parse
-        let parsed: Vec<String> = Self::parse_input(input);
+        let parsed: Vec<String> = Self::parse_input(&input);
         // Respond based on the input
         match Self::argument_at_index(&parsed, 0) {
             "score" => {
@@ -75,27 +75,14 @@ impl Rem {
             },
             "grep" if parsed.len() >= 2 => {
                 // Grep
-                // TODO: better spacing support
-                let mut ending = String::new();
-                for i in 1..parsed.len() {
-                    if i != 1 {
-                        ending.push(' ');
-                    }
-                    ending.push_str(&parsed[i]);
-                }
-                self.run_grep(ending);
+                // TODO: better spacing support (allow for multiple spaces, etc. by using the original input string)
+                self.run_grep(Self::section_portion_of_input(&input));
             },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
-                // TODO: capitalization and spacing
-                let mut ending = String::new();
-                for i in 1..parsed.len() {
-                    if i != 1 {
-                        ending.push(' ');
-                    }
-                    ending.push_str(&parsed[i]);
-                }
-                self.run_tda(ending);
+                // TODO: better spacing support (allow for multiple spaces, etc. by using the original input string)
+                // TODO: capitalization support (use the origianl input string?)
+                self.run_tda(Self::section_portion_of_input(&input));
             },
             "print" => {
                 // Print the file
@@ -288,13 +275,28 @@ impl Rem {
     }
 
     /// Parse the input
-    fn parse_input(input: String) -> Vec<String> {
+    fn parse_input(input: &str) -> Vec<String> {
         // Split by spaces, strip, remove unnecessary characters
         // TODO: impl myself to ignore spaces and keep case within quotes, handle backslashes, etc.
         let splitted: Vec<&str> = input.split(' ').collect::<Vec<&str>>();
         let mut res: Vec<String> = Vec::new();
         for arg in splitted {
             res.push(arg.trim().to_lowercase().to_string());
+        }
+        res
+    }
+
+    /// Get the second portion of the input (everything after the first argument)
+    fn section_portion_of_input(input: &str) -> String {
+        // After the first word, get everything else
+        let mut found_first_space: bool = false;
+        let mut res = String::new();
+        for c in input.trim().chars() {
+            if found_first_space {
+                res.push(c);
+            } else if c == ' ' {
+                found_first_space = true;
+            }
         }
         res
     }
