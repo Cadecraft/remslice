@@ -75,15 +75,18 @@ impl Rem {
             },
             "grep" if parsed.len() >= 2 => {
                 // Grep
-                // TODO: better spacing support (allow for multiple spaces, etc. by using the original input string)
-                self.run_grep(Self::section_portion_of_input(&input));
+                self.run_grep(Self::section_portion_of_input(&input).to_lowercase());
             },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
-                // TODO: better spacing support (allow for multiple spaces, etc. by using the original input string)
                 // TODO: capitalization support (use the origianl input string?)
                 self.run_tda(Self::section_portion_of_input(&input));
             },
+            "tdt" => {
+                // Display the top of the todo list
+                // TODO: impl
+                self.run_tdt();
+            }
             "print" => {
                 // Print the file
                 println!("{}", self.file_loaded);
@@ -134,7 +137,6 @@ impl Rem {
             },
             _ => {
                 // No match
-                // TODO: impl
                 println!("?");
             }
         }
@@ -232,7 +234,7 @@ impl Rem {
             },
             _ => {
                 // Failed
-                println!("The tip doesn't exist");
+                println!("The tip nickname doesn't exist");
             }
         }
     }
@@ -262,6 +264,26 @@ impl Rem {
             println!("Todo added successfully");
         } else {
             println!("Todo could not be added");
+        }
+    }
+
+    /// Run action: todo top
+    fn run_tdt(&mut self) {
+        // Get the end of todos
+        match utils::read_file(&self.config.get_todo_path()) {
+            Some(contents) => {
+                // Print the end of the file up until the first hash symbol
+                // TODO: impl
+                for line in contents.lines().rev() {
+                    if line.starts_with("##") {
+                        break;
+                    }
+                    //
+                }
+            },
+            _ => {
+                println!("Todo file could not be accessed");
+            }
         }
     }
 

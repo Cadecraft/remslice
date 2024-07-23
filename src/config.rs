@@ -18,7 +18,7 @@ impl Config {
     /// Make a new Config
     pub fn new() -> Config {
         let mut c = Config {
-            remrc_path: "C:/Cade/Scripts/Tools_CLI/remrc.txt".to_string(),
+            remrc_path: "C:/Cade/Scripts/Configs/remrc.txt".to_string(),
             tips: Vec::new(),
             todo_path: "C:/Cade/Java/testtodos.txt".to_string()
         };

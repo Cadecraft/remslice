@@ -47,7 +47,8 @@ Example config:
 tip vimtoremember C:/Cade/PDFs/Utility/ToRememberDocs/VimToRemember.md
 tip shortcutstoremember C:/Cade/PDFs/Utility/ToRememberDocs/ShortcutsToRemember.md
 tip testtodos C:/Cade/Java/testtodos.txt
-todo C:/Cade/Java/testtodos.txt
+tip todos C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
+todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 ```
 
 ## System Commands
@@ -74,6 +75,7 @@ todo C:/Cade/Java/testtodos.txt
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
+- `tdt` - "todo top": display the top (most recent) few entries in the todo file specified in `remrc.txt`
 
 ## More
 

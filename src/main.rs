@@ -24,6 +24,7 @@ mod remfetch;
     feat: print only the end of a file
     feat: reminders (have timing, store in file, maybe even use notifications)
     feat: display size of log, uptime, etc. in remfetch
+    feat: cmd to display a line (or lines, if multiple args, or range of lines) in a file
     add to path
     test installing and copying on linux
 */
@@ -35,9 +36,6 @@ fn main() {
 
     // Begin the input loop immediately
     loop {
-        // TODO: get user input
-        // TODO: have rem respond to user input
-        // TODO: quit if necessary
         let user_input = utils::get_user_input_line();
         let should_quit = rem.respond_to_input(user_input);
         if should_quit {
