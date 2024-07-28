@@ -7,6 +7,7 @@ use std::env::consts::OS;
 
 use cli_clipboard;
 use chrono;
+use home;
 
 // Keep the line ending '\n' for consistency in editing files
 const LINE_ENDING: &'static str = "\n";
@@ -139,4 +140,18 @@ pub fn get_time_formatted() -> String {
 /// Get the current operating system
 pub fn get_os() -> String {
     OS.to_string()
+}
+
+/// Get the current config directory (for the .remrc file)
+pub fn get_config_path() -> String {
+    // Return the home dir, plus .remrc
+    match home::home_dir() {
+        Some(mut path) if !path.as_os_str().is_empty() => {
+            path.push(".remrc");
+            path.into_os_string().into_string().unwrap()
+        },
+        _ => {
+            String::new()
+        }
+    }
 }

@@ -14,11 +14,10 @@ pub struct Config {
 }
 
 impl Config {
-    // TODO: allow user to define the remrc path? Some system-level environment variable?
     /// Make a new Config
     pub fn new() -> Config {
         let mut c = Config {
-            remrc_path: "C:/Cade/Scripts/Configs/remrc.txt".to_string(),
+            remrc_path: utils::get_config_path(),
             tips: Vec::new(),
             todo_path: "C:/Cade/Java/testtodos.txt".to_string()
         };
@@ -100,5 +99,10 @@ impl Config {
             }
         }
         return None;
+    }
+
+    /// Display the config path
+    pub fn get_remrc_path(&self) -> String {
+        self.remrc_path.clone()
     }
 }

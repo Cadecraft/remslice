@@ -392,10 +392,11 @@ dependencies = [
 
 [[package]]
 name = "remslice"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "chrono",
  "cli-clipboard",
+ "home",
 ]
 
 [[package]]

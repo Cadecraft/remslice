@@ -15,7 +15,6 @@ mod remfetch;
     rem logger
     randomized responses to certain commands?
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
-    figure out how to store the remrc path so users can adjust it (needed?); otherwise, src must be edited
     refactor: move file operations, grep, etc. into a separate struct
     feat: copy file path from tip
     feat: tip
@@ -31,7 +30,7 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.3.3", "2024/07/21", true);
+    let rem_data = remdata::RemData::new("0.3.4", "2024/07/28", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

@@ -74,12 +74,11 @@ impl Rem {
                 self.run_tip(parsed[1].clone(), None);
             },
             "grep" if parsed.len() >= 2 => {
-                // Grep
+                // Grep (case-insensitive)
                 self.run_grep(Self::section_portion_of_input(&input).to_lowercase());
             },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
-                // TODO: capitalization support (use the origianl input string?)
                 self.run_tda(Self::section_portion_of_input(&input));
             },
             "tdt" => {

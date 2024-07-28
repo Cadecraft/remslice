@@ -7,7 +7,7 @@ please keep in mind that this is purely intended for my own personal and product
 
 ## Installation
 
-To build remslice, Cargo must be installed.
+To build remslice, Cargo must be installed. This is a cross-platform application.
 
 There is also the dependency of `cli-clipboard` for the copy feature:
 - On Windows and macOS, this should work without any additional installation.
@@ -20,9 +20,9 @@ for global easy access on the command line.
 
 ## Config
 
-Check or modify `config.rs` to find or set the file path to the `remrc.txt` file.
+Use `remfetch` to see the directory where your `.remrc` file should be placed (it should be your home directory).
 This file is where all configuration goes.
-Follow this syntax in `remrc.txt`:
+Follow this syntax in the `.remrc` file:
 
 - Use the hash (`#`) symbol to start a comment line
 ```
