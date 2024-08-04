@@ -19,7 +19,7 @@ impl Config {
         let mut c = Config {
             remrc_path: utils::get_config_path(),
             tips: Vec::new(),
-            todo_path: "C:/Cade/Java/testtodos.txt".to_string()
+            todo_path: "default_todos.md".to_string()
         };
         c.load();
         c
@@ -99,10 +99,5 @@ impl Config {
             }
         }
         return None;
-    }
-
-    /// Display the config path
-    pub fn get_remrc_path(&self) -> String {
-        self.remrc_path.clone()
     }
 }

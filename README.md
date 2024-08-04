@@ -1,4 +1,4 @@
-# remslice
+# remslice 🍊
 
 A personal, ergonomic CLI assistant for my miscellaneous needs
 
@@ -13,7 +13,7 @@ There is also the dependency of `cli-clipboard` for the copy feature:
 - On Windows and macOS, this should work without any additional installation.
 - On Linux, according to crates.io, `xorg-dev` and `libxcb-composite0-dev` must first be installed.
 
-Run `cargo build` or `cargo run` for this project.
+In the directory, run `cargo build` or `cargo install --path .` for this project.
 
 It is recommended to add the generated executable to the PATH variable or put it in your bin
 for global easy access on the command line.
@@ -35,9 +35,9 @@ tip tipname C:/MyFolder/thing.txt
 tip anothertip C:/Other/Path/anotherthing.txt
 ```
 
-- `todopath` defines the path used by the todo features (ex. the `tda` command)
+- `todo` defines the path used by the todo features (ex. the `tda` command)
 ```
-todopath C:/MyFolder/todos_list.md
+todo C:/MyFolder/todos_list.md
 ```
 
 - Because file paths come as the last argument, spaces in them *are* allowed naturally; do not use quotes around paths. This also means spaces *cannot* be used in tip nicknames; consider underscores or dashes. Capitalization is allowed and preserved.
@@ -75,7 +75,7 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
-- `tdt` - "todo top": display the top (most recent) few entries in the todo file specified in `remrc.txt`
+- `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header)
 
 ## More
 

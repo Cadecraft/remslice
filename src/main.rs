@@ -12,15 +12,14 @@ mod remfetch;
     allow intaking a file as an argument, or taking flags
     store past commands and allow arrow up/down to move between them
     colors with `crossterm`? `colored`?
-    rem logger
+    rem logger?
     randomized responses to certain commands?
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
     refactor: move file operations, grep, etc. into a separate struct
     feat: copy file path from tip
-    feat: tip
     feat: search through todos (make api?)
     feat: strikethrough todos?
-    feat: print only the end of a file
+    feat: print only the end of a markdown file (bottom up to the last header line)
     feat: reminders (have timing, store in file, maybe even use notifications)
     feat: display size of log, uptime, etc. in remfetch
     feat: cmd to display a line (or lines, if multiple args, or range of lines) in a file
@@ -30,7 +29,7 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.3.4", "2024/07/28", true);
+    let rem_data = remdata::RemData::new("0.3.6", "2024/07/29", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

@@ -83,7 +83,6 @@ impl Rem {
             },
             "tdt" => {
                 // Display the top of the todo list
-                // TODO: impl
                 self.run_tdt();
             }
             "print" => {
@@ -272,13 +271,15 @@ impl Rem {
         match utils::read_file(&self.config.get_todo_path()) {
             Some(contents) => {
                 // Print the end of the file up until the first hash symbol
-                // TODO: impl
+                let mut res = String::new();
                 for line in contents.lines().rev() {
                     if line.starts_with("##") {
                         break;
                     }
-                    //
+                    // Line goes above res (because iterating in reverse)
+                    res = format!("{}\n{}", line, res);
                 }
+                println!("{}", res);
             },
             _ => {
                 println!("Todo file could not be accessed");
