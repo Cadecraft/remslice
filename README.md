@@ -42,12 +42,23 @@ todo C:/MyFolder/todos_list.md
 
 - Because file paths come as the last argument, spaces in them *are* allowed naturally; do not use quotes around paths. This also means spaces *cannot* be used in tip nicknames; consider underscores or dashes. Capitalization is allowed and preserved.
 
+<!-- TODO: if ever published publicly, change the example config to be less personal -->
+
 Example config:
 ```
+# remrc for personal PC
+# R: v0.2.0, E: 2024/08/09
+
+# Tips: these are used to easily see the contents of frequently accessed text documents
 tip vimtoremember C:/Cade/PDFs/Utility/ToRememberDocs/VimToRemember.md
 tip shortcutstoremember C:/Cade/PDFs/Utility/ToRememberDocs/ShortcutsToRemember.md
 tip testtodos C:/Cade/Java/testtodos.txt
+tip commandstoremember C:/Cade/PDFs/Utility/ToRememberDocs/CommandsToRemember.md
+tip help C:/Cade/Rust/Misc/remslice/README.md
 tip todos C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
+# TODO: add class schedules and other useful files
+
+# Todo path
 todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 ```
 
@@ -56,7 +67,7 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `version`/`ver` - display simple version information
 - `remfetch` - aesthetically display more version information (think neofetch)
 - `pwd` - display the current working directory
-- `help` - display a simple help screen that points to this README file
+- `help` - display a simple help screen that points to this README file (if you use this often, consider adding a tip)
 
 ## Misc. Commands
 - `bye` - exit with a farewell message
@@ -67,13 +78,15 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `paste`/`p` - display the contents of the system clipboard
 - `pasterun!`/`pr!` - run the contents of the system clipboard as a command input to rem (dangerous--`paste` first to see contents!)
 
-<!-- TODO: list all -->
+<!-- TODO: list all if still unfinished -->
 
 ## Procedure/Action Commands
 - `score` - generate a daily score based on input prompts
 - `tip {nickname}` - load a file based on its defined nickname (searches for the first one starting with the argument) (note: `b` is synonymous with `tip`)
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
+- `tip-ls` - list all available tips and their file paths
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
+- `line {line number}` - print the given line of the currently loaded file
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 - `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header)
 

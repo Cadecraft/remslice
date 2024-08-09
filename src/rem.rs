@@ -73,10 +73,18 @@ impl Rem {
                 // Tip
                 self.run_tip(parsed[1].clone(), None);
             },
+            "tip-ls" => {
+                // List all tips and their directories
+                self.run_tip_ls();
+            },
             "grep" if parsed.len() >= 2 => {
                 // Grep (case-insensitive)
                 self.run_grep(Self::section_portion_of_input(&input).to_lowercase());
             },
+            "line" if parsed.len() >= 2 => {
+                // Print the line number
+                self.run_line(Self::section_portion_of_input(&input).to_lowercase());
+            }
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
                 self.run_tda(Self::section_portion_of_input(&input));
@@ -237,6 +245,13 @@ impl Rem {
         }
     }
 
+    /// Run action: tip list
+    fn run_tip_ls(&self) {
+        // Display all tips
+        println!("All tips added:");
+        println!("{}", self.config.display_tips());
+    }
+
     /// Run action: grep
     fn run_grep(&mut self, query: String) {
         // Search the file for lines including it
@@ -246,12 +261,31 @@ impl Rem {
             // Match?
             if line.to_lowercase().find(&query).is_some() {
                 // Found
-                println!("{:5} {}", i, line);
+                println!("{:5} {}", i + 1, line);
                 success = true;
             }
         }
         if !success {
             println!("I found no results in the file.");
+        }
+    }
+
+    /// Run action: line
+    fn run_line(&mut self, query: String) {
+        // The line number in the query
+        match query.parse::<usize>() {
+            Ok(linenum) => {
+                if linenum < 1 || linenum > self.file_loaded.lines().count() {
+                    println!("Enter a line number from 1 to {}", self.file_loaded.lines().count());
+                    return;
+                }
+                // Print the line
+                println!("   {} - {}", linenum, self.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
+            },
+            _ => {
+                println!("Enter a line number from 1 to {}", self.file_loaded.lines().count());
+                return;
+            }
         }
     }
 

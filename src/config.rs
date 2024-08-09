@@ -100,4 +100,13 @@ impl Config {
         }
         return None;
     }
+
+    /// Display all tips
+    pub fn display_tips(&self) -> String {
+        let mut res = String::new();
+        for tip in &self.tips {
+            res.push_str(&format!("   {} : {}\n", tip.key, tip.value));
+        }
+        return res;
+    }
 }
