@@ -2,6 +2,7 @@ use crate::remdata;
 use crate::utils;
 use crate::config::Config;
 use crate::remfetch;
+use std::collections::hash_map::HashMap;
 
 /// The data and methods for Rem
 pub struct Rem {
@@ -9,6 +10,8 @@ pub struct Rem {
     ping_count: u32,
     to_copy_val: String,
     file_loaded: String,
+    // Store the ID (string of lowercase letters) and corresponding line NUMBER (not index)
+    todos_ids: HashMap<String, usize>,
     config: Config
 }
 
@@ -20,6 +23,7 @@ impl Rem {
             ping_count: 0,
             to_copy_val: "[empty]".to_string(),
             file_loaded: String::new(),
+            todos_ids: HashMap::new(),
             config: Config::new()
         }
     }
@@ -320,6 +324,8 @@ impl Rem {
                 let mut res = String::new();
                 let lines = contents.lines().collect::<Vec<&str>>();
                 let mut headers_seen = 0;
+                self.todos_ids.clear();
+                let mut currid = "a".to_string();
                 for i in (0..lines.len()).rev() {
                     let mut final_line = false;
                     if lines[i].starts_with("##") {
@@ -328,11 +334,14 @@ impl Rem {
                             final_line = true;
                         }
                     }
+                    // Track this line's ID
+                    self.todos_ids.insert(currid.clone(), i + 1);
                     // Line goes above res (because iterating in reverse)
-                    res = format!("   {:5} {}\n{}", i + 1, lines[i], res);
+                    res = format!("{:3}{:5} {}\n{}", currid, i + 1, lines[i], res);
                     if final_line {
                         break;
                     }
+                    currid = utils::generate_next_id(currid.clone());
                 }
                 /*for line in contents.lines().rev() {
                     if line.starts_with("##") {

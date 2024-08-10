@@ -155,3 +155,31 @@ pub fn get_config_path() -> String {
         }
     }
 }
+
+/// Generate a new ID based on the prior one ("a" -> "zzz")
+pub fn generate_next_id(currid: String) -> String {
+    // Either increment final character or add a new one
+    let mut chars = currid.chars().collect::<Vec<char>>();
+    let mut carry = true;
+    for i in (0..chars.len()).rev() {
+        // Increase?
+        if carry {
+            if chars[i] == 'z' {
+                carry = true;
+                chars[i] = 'a';
+            } else {
+                // Increase this one
+                chars[i] = std::char::from_u32(chars[i] as u32 + 1).unwrap_or('a');
+                carry = false;
+            }
+        }
+    }
+    if carry {
+        chars.insert(0, 'a');
+    }
+    let mut res = String::new();
+    for c in chars {
+        res.push(c);
+    }
+    res
+}

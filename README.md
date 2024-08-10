@@ -88,7 +88,7 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `line {line number}` - print the given line of the currently loaded file
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
-- `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header)
+- `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display the top todo entries (up until the 2nd most recent `##` header)
 
 <!-- TODO: tdc ("todo clear") and a system of letters/numbers/hex (?) for ID'ing all listed todos -->
