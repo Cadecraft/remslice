@@ -90,12 +90,16 @@ impl Rem {
                 self.run_tda(Self::section_portion_of_input(&input));
             },
             "tdt" => {
-                // Display the top of the todo list
-                self.run_tdt();
-            }
+                // Display the top of the todo list (1 level)
+                self.run_tdt(1);
+            },
+            "tdt2" => {
+                // Display the top of the todo list (2 levels)
+                self.run_tdt(2);
+            },
             "print" => {
                 // Print the file
-                println!("{}", self.file_loaded);
+                self.run_print();
             },
             "copy" | "y" => {
                 // Try to copy whatever is in the copy val
@@ -252,6 +256,14 @@ impl Rem {
         println!("{}", self.config.display_tips());
     }
 
+    /// Run action: print
+    fn run_print(&mut self) {
+        // Print
+        for (i, line) in self.file_loaded.lines().enumerate() {
+            println!("   {:5} {}", i + 1, line);
+        }
+    }
+
     /// Run action: grep
     fn run_grep(&mut self, query: String) {
         // Search the file for lines including it
@@ -261,7 +273,7 @@ impl Rem {
             // Match?
             if line.to_lowercase().find(&query).is_some() {
                 // Found
-                println!("{:5} {}", i + 1, line);
+                println!("   {:5} {}", i + 1, line);
                 success = true;
             }
         }
@@ -280,7 +292,7 @@ impl Rem {
                     return;
                 }
                 // Print the line
-                println!("   {} - {}", linenum, self.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
+                println!("   {:5} {}", linenum, self.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
             },
             _ => {
                 println!("Enter a line number from 1 to {}", self.file_loaded.lines().count());
@@ -299,20 +311,36 @@ impl Rem {
         }
     }
 
-    /// Run action: todo top
-    fn run_tdt(&mut self) {
+    /// Run action: todo top (up until the given number of headers, default 1)
+    fn run_tdt(&mut self, count: u32) {
         // Get the end of todos
         match utils::read_file(&self.config.get_todo_path()) {
             Some(contents) => {
                 // Print the end of the file up until the first hash symbol
                 let mut res = String::new();
-                for line in contents.lines().rev() {
+                let lines = contents.lines().collect::<Vec<&str>>();
+                let mut headers_seen = 0;
+                for i in (0..lines.len()).rev() {
+                    let mut final_line = false;
+                    if lines[i].starts_with("##") {
+                        headers_seen += 1;
+                        if headers_seen >= count {
+                            final_line = true;
+                        }
+                    }
+                    // Line goes above res (because iterating in reverse)
+                    res = format!("   {:5} {}\n{}", i + 1, lines[i], res);
+                    if final_line {
+                        break;
+                    }
+                }
+                /*for line in contents.lines().rev() {
                     if line.starts_with("##") {
                         break;
                     }
                     // Line goes above res (because iterating in reverse)
                     res = format!("{}\n{}", line, res);
-                }
+                }*/
                 println!("{}", res);
             },
             _ => {

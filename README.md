@@ -89,10 +89,24 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `line {line number}` - print the given line of the currently loaded file
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 - `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header)
+- `tdt2` - "todo top x2": display the top todo entries (up until the 2nd most recent `##` header)
+
+<!-- TODO: tdc ("todo clear") and a system of letters/numbers/hex (?) for ID'ing all listed todos -->
 
 ## More
 
 This was developed using the `rebelot/kanagawa.nvim` theme.
+
+Todo files are expected to be in markdown, formatted like this:
+```md
+# Todo List
+## 2024/08/08
+- build a project
+- ~~this one has been completed~~
+## 2024/08/09
+- keep building
+- take notes
+```
 
 ## Etymology?
 
