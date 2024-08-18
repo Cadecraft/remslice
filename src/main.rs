@@ -16,12 +16,9 @@ mod remfetch;
     initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
     refactor: move file operations, grep, etc. into a separate struct
     feat: copy file path from tip
-    feat: search through todos (make api?)
-    feat: strikethrough todos (tdc)
-    feat: print only the end of a markdown file (bottom up to the last header line)
     feat: reminders (have timing, store in file, maybe even use notifications)
     feat: display size of log, uptime, etc. in remfetch
-    feat: cmd to display a line (or lines, if multiple args, or range of lines) in a file
+    feat: cmd to display a range of lines, if multiple args, in a file
     test installing and copying on linux
 */
 
