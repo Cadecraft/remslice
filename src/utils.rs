@@ -126,6 +126,18 @@ pub fn append_to_file(path: &str, to_write: &str) -> bool {
     }
 }
 
+/// Write to a file given its path, if possible, and return whether successful
+pub fn write_to_file(path: &str, to_write: &str) -> bool {
+    match fs::write(path, to_write) {
+        Ok(_theres) => {
+            true
+        },
+        _ => {
+            false
+        }
+    }
+}
+
 /// Get the current local time
 fn get_time() -> chrono::DateTime<chrono::Local> {
     chrono::Local::now()

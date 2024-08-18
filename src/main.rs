@@ -17,7 +17,7 @@ mod remfetch;
     refactor: move file operations, grep, etc. into a separate struct
     feat: copy file path from tip
     feat: search through todos (make api?)
-    feat: strikethrough todos?
+    feat: strikethrough todos (tdc)
     feat: print only the end of a markdown file (bottom up to the last header line)
     feat: reminders (have timing, store in file, maybe even use notifications)
     feat: display size of log, uptime, etc. in remfetch
@@ -27,7 +27,7 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.3.8", "2024/08/09", true);
+    let rem_data = remdata::RemData::new("0.4.0", "2024/08/18", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

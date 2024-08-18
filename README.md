@@ -90,6 +90,7 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 - `tdt` - "todo top": display the top (most recent) entries in the todo file specified in `remrc.txt` (up until the most recent `#` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display the top todo entries (up until the 2nd most recent `##` header)
+- `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 
 <!-- TODO: tdc ("todo clear") and a system of letters/numbers/hex (?) for ID'ing all listed todos -->
 

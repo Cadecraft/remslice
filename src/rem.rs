@@ -88,7 +88,7 @@ impl Rem {
             "line" if parsed.len() >= 2 => {
                 // Print the line number
                 self.run_line(Self::section_portion_of_input(&input).to_lowercase());
-            }
+            },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
                 self.run_tda(Self::section_portion_of_input(&input));
@@ -100,6 +100,10 @@ impl Rem {
             "tdt2" => {
                 // Display the top of the todo list (2 levels)
                 self.run_tdt(2);
+            },
+            "tdc" if parsed.len() == 2 => {
+                // Clear a todo based on its ID
+                self.run_tdc(parsed[1].clone());
             },
             "print" => {
                 // Print the file
@@ -354,6 +358,68 @@ impl Rem {
             },
             _ => {
                 println!("Todo file could not be accessed");
+            }
+        }
+    }
+
+    /// Clear a todo based on its ID
+    fn run_tdc(&self, id: String) {
+        let mut linenum: usize = 0;
+        match self.todos_ids.get(&id) {
+            Some(l) => {
+                linenum = *l;
+            },
+            _ => {
+                println!("ID does not exist");
+                return;
+            }
+        }
+        // Either clear (strikethrough) OR unclear (remove strikethrough), depending on whehter already cleared
+        match utils::read_file(&self.config.get_todo_path()) {
+            Some(contents) => {
+                let mut lines = contents.lines().collect::<Vec<&str>>();
+                // Check bounds
+                if linenum < 1 || linenum > lines.len() {
+                    // Out of bounds
+                    println!("Line number pointed to is out of bounds");
+                    return;
+                }
+                // TODO: impl both the clear/unclear algorithms
+                let target: String = lines[linenum - 1].to_string();
+                let mut res = String::new();
+                if target.find('~').is_some() {
+                    // Unclear (remove strikethrough)
+                    for c in target.chars() {
+                        if c != '~' {
+                            res.push(c);
+                        }
+                    }
+                } else {
+                    // Clear (strikethrough)
+                    // Contents should look like: "- the contents" -> "- ~~the contents~~"
+                    for (i, c) in target.chars().enumerate() {
+                        if i == 2 {
+                            res.push_str("~~");
+                        }
+                        res.push(c);
+                    }
+                    res.push_str("~~");
+                }
+                // Res has been updated
+                // Print successful result
+                println!("   {:5} {}", linenum, res);
+                // Update the contents lines
+                lines[linenum - 1] = &res;
+                let mut newcontents = String::new();
+                for line in lines {
+                    newcontents.push_str(&format!("{}\n", line));
+                }
+                // Overwrite the file with the new contents
+                utils::write_to_file(&self.config.get_todo_path(), &newcontents);
+            },
+            _ => {
+                println!("Todo file could not be accessed");
+                return;
             }
         }
     }
