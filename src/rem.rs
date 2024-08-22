@@ -105,6 +105,10 @@ impl Rem {
                 // Clear a todo based on its ID
                 self.run_tdc(parsed[1].clone());
             },
+            "tdn" => {
+                // Add a new day to the todo log
+                self.run_tdn();
+            },
             "print" => {
                 // Print the file
                 self.run_print();
@@ -421,6 +425,17 @@ impl Rem {
                 println!("Todo file could not be accessed");
                 return;
             }
+        }
+    }
+
+    /// Run action: todo new day
+    fn run_tdn(&mut self) {
+        // Append the day to the end of todos
+        // TODO: impl
+        if utils::append_to_file(&self.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
+            println!("New day added successfully");
+        } else {
+            println!("Todo could not be added");
         }
     }
 

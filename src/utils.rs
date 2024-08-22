@@ -149,6 +149,12 @@ pub fn get_time_formatted() -> String {
     thetime.format("%Y/%m/%d %H:%M").to_string()
 }
 
+/// Get the current date only, formatted
+pub fn get_date_only_formatted() -> String {
+    let thetime = get_time();
+    thetime.format("%Y/%m/%d").to_string()
+}
+
 /// Get the current operating system
 pub fn get_os() -> String {
     OS.to_string()
