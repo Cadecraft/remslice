@@ -10,6 +10,7 @@ struct TipPair {
 pub struct Config {
     remrc_path: String,
     tips: Vec<TipPair>,
+    aliases: Vec<TipPair>,
     todo_path: String
 }
 
@@ -19,6 +20,7 @@ impl Config {
         let mut c = Config {
             remrc_path: utils::get_config_path(),
             tips: Vec::new(),
+            aliases: Vec::new(),
             todo_path: "default_todos.md".to_string()
         };
         c.load();
@@ -59,6 +61,23 @@ impl Config {
                             self.tips.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: userpath
+                            });
+                        },
+                        "alias" if parsed.len() >= 3 => {
+                            // Add an alias
+                            // TODO: test commands with spaces
+                            let mut spacegaps = 0;
+                            let mut usercommand = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 2 {
+                                    usercommand.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.aliases.push(TipPair {
+                                key: parsed[1].trim().to_string(),
+                                value: usercommand
                             });
                         },
                         "todo" if parsed.len() >= 2 => {
@@ -106,6 +125,25 @@ impl Config {
         let mut res = String::new();
         for tip in &self.tips {
             res.push_str(&format!("   {} : {}\n", tip.key, tip.value));
+        }
+        return res;
+    }
+
+    /// Get the value of an alias matching a key
+    pub fn get_alias_value(&self, search_for: &str) -> Option<String> {
+        for alias in &self.aliases {
+            if alias.key == search_for {
+                return Some(alias.value.clone());
+            }
+        }
+        return None;
+    }
+
+    /// Display all aliases
+    pub fn display_aliases(&self) -> String {
+        let mut res = String::new();
+        for alias in &self.aliases {
+            res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
         }
         return res;
     }

@@ -109,6 +109,14 @@ impl Rem {
                 // Add a new day to the todo log
                 self.run_tdn();
             },
+            "al" => {
+                // Run the command represented by an alias
+                self.run_al(parsed[1].clone());
+            },
+            "al-ls" => {
+                // List all aliases and their commands
+                self.run_al_ls();
+            }
             "print" => {
                 // Print the file
                 self.run_print();
@@ -266,6 +274,29 @@ impl Rem {
         // Display all tips
         println!("All tips added:");
         println!("{}", self.config.display_tips());
+    }
+
+    /// Run action: alias
+    fn run_al(&mut self, alias: String) {
+        // Search for the given file and display it, so a tip can be found
+        match self.config.get_alias_value(&alias) {
+            Some(alias_value) => {
+                // Open and load the file, if possible
+                let res = utils::run_command(&alias_value);
+                println!("{}", res);
+            },
+            _ => {
+                // Failed
+                println!("The alias doesn't exist");
+            }
+        }
+    }
+
+    /// Run action: alias list
+    fn run_al_ls(&self) {
+        // Display all aliases
+        println!("All aliases added:");
+        println!("{}", self.config.display_aliases());
     }
 
     /// Run action: print

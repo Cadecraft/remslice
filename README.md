@@ -42,6 +42,12 @@ todo C:/MyFolder/todos_list.md
 
 - Because file paths come as the last argument, spaces in them *are* allowed naturally; do not use quotes around paths. This also means spaces *cannot* be used in tip nicknames; consider underscores or dashes. Capitalization is allowed and preserved.
 
+- `alias` defines an alias to a shell command (to run in `powershell` for Windows and `sh` elsewhere)
+```
+# Runs `firefox -P "Personal` when you type `al ffp`
+alias ffp firefox -P "Personal"
+```
+
 <!-- TODO: if ever published publicly, change the example config to be less personal -->
 
 Example config:
@@ -92,6 +98,10 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
+- `al {alias}` - run the command defined by a certain alias in the config file
+- `al-ls` - list all available aliases and their file paths
+
+<!-- TODO: implement al and al-ls -->
 
 ## More
 

@@ -4,6 +4,7 @@ use std::io::{stdin, stdout, Write};
 use std::env;
 use std::fs;
 use std::env::consts::OS;
+use std::process::Command;
 
 use cli_clipboard;
 use chrono;
@@ -158,6 +159,38 @@ pub fn get_date_only_formatted() -> String {
 /// Get the current operating system
 pub fn get_os() -> String {
     OS.to_string()
+}
+
+/// Run a command
+pub fn run_command(command: &str) -> String {
+    match OS {
+        "windows" => {
+            // Use powershell
+            match Command::new("powershell").args(["-c", command]).spawn() {
+                Ok(_theres) => {
+                    "Command executed via powershell".to_string()
+                },
+                _ => {
+                    "Failed to execute command via powershell".to_string()
+                }
+            }
+        },
+        "linux" | "macos" => {
+            // Use sh
+            match Command::new("sh").args(["-c", command]).spawn() {
+                Ok(_theres) => {
+                    "Command executed via sh".to_string()
+                },
+                _ => {
+                    "Failed to execute command via sh".to_string()
+                }
+            }
+        },
+        _ => {
+            // Nothing
+            "Failed to execute command".to_string()
+        }
+    }
 }
 
 /// Get the current config directory (for the .remrc file)
