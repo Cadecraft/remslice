@@ -66,6 +66,10 @@ tip todos C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 
 # Todo path
 todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
+
+# Aliases
+alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"
+alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 ```
 
 ## System Commands
@@ -100,8 +104,6 @@ todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
 - `al {alias}` - run the command defined by a certain alias in the config file
 - `al-ls` - list all available aliases and their file paths
-
-<!-- TODO: implement al and al-ls -->
 
 ## More
 
