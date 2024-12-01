@@ -80,9 +80,6 @@ score_n Hours wasted on YouTube (0.0 to 1.0)
 
 - `score_formula_number` defines the number or name used to describe the score formula
 
-<!-- TODO: when publishing publicly, check ALL todos -->
-<!-- TODO: when publishing publicly, change/remove bye and hi messages -->
-
 ### Example config
 ```
 # remrc for personal Windows laptop
@@ -118,8 +115,6 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; G
 - `copy`/`y` - copy ("yank") the last copyable message sent to the system clipboard (generally used after `score` or `time`)
 - `paste`/`p` - display the contents of the system clipboard
 - `pasterun!`/`pr!` - run the contents of the system clipboard as a command input to rem (dangerous--`paste` first to see contents!)
-
-<!-- TODO: list all if still unfinished -->
 
 ## Procedure/Action Commands
 - `score` - generate a daily score based on input prompts defined in your config
