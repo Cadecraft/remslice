@@ -163,7 +163,9 @@ impl Rem {
             },
             "time" => {
                 // Get the current time
-                println!("{}", utils::get_time_formatted());
+                let output = utils::get_time_formatted();
+                self.to_copy_val = output.clone();
+                println!("{}", output);
             },
             _ => {
                 // No match

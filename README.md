@@ -87,7 +87,7 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 - `ping` - pong!
 - `wipe` - wipe the screen
 - `time` - display the current time
-- `copy`/`y` - copy ("yank") the last copyable message sent to the system clipboard (generally used after `score`)
+- `copy`/`y` - copy ("yank") the last copyable message sent to the system clipboard (generally used after `score` or `time`)
 - `paste`/`p` - display the contents of the system clipboard
 - `pasterun!`/`pr!` - run the contents of the system clipboard as a command input to rem (dangerous--`paste` first to see contents!)
 
