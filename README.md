@@ -13,14 +13,14 @@ There is also the dependency of `cli-clipboard` for the copy feature:
 - On Windows and macOS, this should work without any additional installation.
 - On Linux, according to crates.io, `xorg-dev` and `libxcb-composite0-dev` must first be installed.
 
-In the directory, run `cargo build` or `cargo install --path .` for this project.
+In the directory, run `cargo build` to build or `cargo install --path .` to build and install this project.
 
-It is recommended to add the generated executable to the PATH variable or put it in your bin
+It is recommended to add the generated executable to the PATH variable or put it in your bin folder
 for global easy access on the command line.
 
 ## Config
 
-Use `remfetch` to see the directory where your `.remrc` file should be placed (it should be your home directory).
+Use the `remfetch` command to see the directory where your `.remrc` file should be placed (it should be your home directory).
 This file is where all configuration goes.
 Follow this syntax in the `.remrc` file:
 
@@ -30,6 +30,7 @@ Follow this syntax in the `.remrc` file:
 ```
 
 - `tip` creates a new tip with the given nickname that links to the given file path
+    - Because file paths come as the last argument, spaces in them *are* allowed naturally; do not use quotes around paths. This also means spaces *cannot* be used in tip nicknames; consider underscores or dashes. Capitalization is allowed and preserved.
 ```
 tip tipname C:/MyFolder/thing.txt
 tip anothertip C:/Other/Path/anotherthing.txt
@@ -40,15 +41,17 @@ tip anothertip C:/Other/Path/anotherthing.txt
 todo C:/MyFolder/todos_list.md
 ```
 
-- Because file paths come as the last argument, spaces in them *are* allowed naturally; do not use quotes around paths. This also means spaces *cannot* be used in tip nicknames; consider underscores or dashes. Capitalization is allowed and preserved.
-
-- `alias` defines an alias to a shell command (to run in `powershell` for Windows and `sh` elsewhere)
+- `shell_alias` defines an alias to a shell command (to be run with the `al` command)
+    - Runs in `powershell` for Windows and `sh` elsewhere
+    - Like with the file paths above, you *cannot* use spaces in your alias names.
 ```
 # Runs `firefox -P "Personal` when you type `al ffp`
-alias ffp firefox -P "Personal"
+shell_alias ffp firefox -P "Personal"
 ```
 
 <!-- TODO: if ever published publicly, change the example config to be less personal -->
+<!-- TODO: when publishing publicly, check ALL todos -->
+<!-- TODO: when publishing publicly, change/remove bye and hi messages -->
 
 Example config:
 ```
@@ -68,8 +71,8 @@ tip todos C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
 
 # Aliases
-alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"
-alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
+shell_alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"
+shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 ```
 
 ## System Commands
@@ -102,7 +105,7 @@ alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
-- `al {alias}` - run the command defined by a certain alias in the config file
+- `al {shell alias}` - run the command defined by a certain shell alias in the config file
 - `al-ls` - list all available aliases and their file paths
 
 ## More

@@ -279,7 +279,7 @@ impl Rem {
     /// Run action: alias
     fn run_al(&mut self, alias: String) {
         // Search for the given file and display it, so a tip can be found
-        match self.config.get_alias_value(&alias) {
+        match self.config.get_shell_alias_value(&alias) {
             Some(alias_value) => {
                 // Open and load the file, if possible
                 let res = utils::run_command(&alias_value);
@@ -296,7 +296,7 @@ impl Rem {
     fn run_al_ls(&self) {
         // Display all aliases
         println!("All aliases added:");
-        println!("{}", self.config.display_aliases());
+        println!("{}", self.config.display_shell_aliases());
     }
 
     /// Run action: print

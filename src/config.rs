@@ -10,8 +10,12 @@ struct TipPair {
 pub struct Config {
     remrc_path: String,
     tips: Vec<TipPair>,
-    aliases: Vec<TipPair>,
-    todo_path: String
+    shell_aliases: Vec<TipPair>,
+    todo_path: String,
+    score_positive: Vec<String>,
+    score_negative: Vec<String>,
+    score_divby: f32,
+    score_formula_number: String
 }
 
 impl Config {
@@ -20,8 +24,12 @@ impl Config {
         let mut c = Config {
             remrc_path: utils::get_config_path(),
             tips: Vec::new(),
-            aliases: Vec::new(),
-            todo_path: "default_todos.md".to_string()
+            shell_aliases: Vec::new(),
+            todo_path: "default_todos.md".to_string(),
+            score_positive: Vec::new(),
+            score_negative: Vec::new(),
+            score_divby: 5.0,
+            score_formula_number: "1".to_string()
         };
         c.load();
         c
@@ -63,9 +71,8 @@ impl Config {
                                 value: userpath
                             });
                         },
-                        "alias" if parsed.len() >= 3 => {
+                        "shell_alias" if parsed.len() >= 3 => {
                             // Add an alias
-                            // TODO: test commands with spaces
                             let mut spacegaps = 0;
                             let mut usercommand = String::new();
                             for c in line.trim().chars() {
@@ -75,7 +82,7 @@ impl Config {
                                     spacegaps += 1;
                                 }
                             }
-                            self.aliases.push(TipPair {
+                            self.shell_aliases.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: usercommand
                             });
@@ -93,6 +100,65 @@ impl Config {
                                 }
                             }
                             self.todo_path = parsed[1].trim().to_string()
+                        },
+                        "score_p" if parsed.len() >= 2 => {
+                            // Add a positive score category
+                            let mut spacegaps = 0;
+                            let mut userstring = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 1 {
+                                    userstring.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.score_positive.push(userstring);
+                        },
+                        "score_n" if parsed.len() >= 2 => {
+                            // Add a negative score category
+                            let mut spacegaps = 0;
+                            let mut userstring = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 1 {
+                                    userstring.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.score_negative.push(userstring);
+                        },
+                        "score_divby" if parsed.len() >= 2 => {
+                            // Set the score division by
+                            let mut spacegaps = 0;
+                            let mut userdivby = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 1 {
+                                    userdivby.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            match userdivby.parse::<f32>() {
+                                Ok(res) => {
+                                    self.score_divby = res;
+                                },
+                                _ => {
+                                    // Error
+                                }
+                            };
+                        },
+                        "score_formula_number" if parsed.len() >= 2 => {
+                            // Set the score division by
+                            let mut spacegaps = 0;
+                            let mut usernum = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 1 {
+                                    usernum.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.score_formula_number = usernum;
                         },
                         _ => {
                             // None
@@ -130,8 +196,8 @@ impl Config {
     }
 
     /// Get the value of an alias matching a key
-    pub fn get_alias_value(&self, search_for: &str) -> Option<String> {
-        for alias in &self.aliases {
+    pub fn get_shell_alias_value(&self, search_for: &str) -> Option<String> {
+        for alias in &self.shell_aliases {
             if alias.key == search_for {
                 return Some(alias.value.clone());
             }
@@ -140,9 +206,9 @@ impl Config {
     }
 
     /// Display all aliases
-    pub fn display_aliases(&self) -> String {
+    pub fn display_shell_aliases(&self) -> String {
         let mut res = String::new();
-        for alias in &self.aliases {
+        for alias in &self.shell_aliases {
             res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
         }
         return res;
