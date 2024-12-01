@@ -8,6 +8,7 @@ mod config;
 mod remfetch;
 
 /* TODO:
+    feat: rem_alias, which points to a different rem command (essentially allowing you to bypass starting each alias with `al`)
     feat: allow intaking a file as an argument, or taking flags?
     feat: colors with `crossterm`? `colored`?
     feat: opt-in log file of commands/responses and dates?
@@ -21,7 +22,7 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.5.1", "2024/12/01", true);
+    let rem_data = remdata::RemData::new("0.5.2", "2024/12/01", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately

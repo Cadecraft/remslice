@@ -6,6 +6,7 @@ pub fn remfetch(current_remdata: &remdata::RemData) -> String {
     let mut res: String = String::new();
     // TODO: impl more details?
     // Like neofetch/fastfetch, but for remslice
+    // Meant to look like an orange slice
     let current_morning = if current_remdata.get_m() { "[success]" } else { "[failure]" };
     res.push_str(&format!("                          ,.           REMSLICE\n"));
     res.push_str(&format!("                        == =-\\         --------\n"));

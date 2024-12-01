@@ -450,7 +450,6 @@ impl Rem {
     /// Run action: todo new day
     fn run_tdn(&mut self) {
         // Append the day to the end of todos
-        // TODO: impl
         if utils::append_to_file(&self.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
             println!("New day added successfully");
         } else {

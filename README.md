@@ -138,7 +138,7 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; G
 
 ## More
 
-This was developed using the `rebelot/kanagawa.nvim` theme.
+This was developed using the `rebelot/kanagawa.nvim` colorscheme.
 
 Todo files are expected to be in markdown, formatted like this:
 ```md

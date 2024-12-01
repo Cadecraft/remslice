@@ -175,7 +175,7 @@ pub fn run_command(command: &str) -> String {
                 }
             }
         },
-        "linux" | "macos" => {
+        _ => {
             // Use sh
             match Command::new("sh").args(["-c", command]).spawn() {
                 Ok(_theres) => {
@@ -185,10 +185,6 @@ pub fn run_command(command: &str) -> String {
                     "Failed to execute command via sh".to_string()
                 }
             }
-        },
-        _ => {
-            // Nothing
-            "Failed to execute command".to_string()
         }
     }
 }
