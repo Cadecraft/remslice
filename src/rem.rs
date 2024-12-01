@@ -185,23 +185,7 @@ impl Rem {
 
     /// Run action: score calculation
     fn run_score(&mut self) {
-        // TODO: impl
-        // TODO: get based on config
-        // TODO: remove unused code
-        // Defaults
-        /*let categories_positive: Vec<&str> = vec![
-            "% exercise completed",
-            "% Path agenda completed",
-            "Quality LeetCode",
-            "% posture",
-            "# good conv / 3.0",
-            "Qualitative eval"
-        ];
-        let categories_negative: Vec<&str> = vec![
-            "Hrs YT/news/reels scrolling",
-            "Hrs unproductive Discord",
-            "# ..."
-        ];*/
+        // Get based on config
         let divide_by: f32 = self.config.score_divby();
         let formula_number: &str = &self.config.score_formula_number();
         // Obtain relevant information
@@ -220,6 +204,7 @@ impl Rem {
             total_score -= uin;
             daily_score_disp.push_str(&format!(" - {:.2}", uin));
         }
+        // Calculate and format
         total_score /= divide_by;
         daily_score_disp.push_str(&format!(") / {} = {:.2}", divide_by, total_score));
         self.to_copy_val = daily_score_disp.clone();
@@ -298,7 +283,7 @@ impl Rem {
     /// Run action: alias list
     fn run_al_ls(&self) {
         // Display all aliases
-        println!("All aliases added:");
+        println!("All shell aliases added:");
         println!("{}", self.config.display_shell_aliases());
     }
 

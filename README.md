@@ -28,7 +28,7 @@ This is meant to be a portable, personal productivity CLI tool that makes variou
 
 Some of my everyday usecases:
 - Check the date and time (I keep my taskbar hidden)
-- Add a shell alias to my config file so I can launch firefox profiles without having to enter the profile manager
+- Add a shell alias to my config file so I can launch different browser profiles without having to enter its profile manager
 - Add todos to a file the moment I think of them using the `tda` command
 
 ## Configuration File
@@ -51,12 +51,12 @@ tip tipname C:/MyFolder/thing.txt
 tip anothertip C:/Other/Path/anotherthing.txt
 ```
 
-- `todo` defines the path used by the todo features (ex. the `tda` command)
+- `todo` defines the path to the file used by the todo features (ex. the `tda` command) (see the More section below for the format)
 ```
 todo C:/MyFolder/todos_list.md
 ```
 
-- `shell_alias` defines an alias to a shell command (to be run with the `al` command)
+- `shell_alias` defines an alias to a shell command
     - Runs in `powershell` for Windows and `sh` elsewhere
     - Like with the file paths above, you *cannot* use spaces in your alias names.
 ```
@@ -80,36 +80,33 @@ score_n Hours wasted on YouTube (0.0 to 1.0)
 
 - `score_formula_number` defines the number or name used to describe the score formula
 
-<!-- TODO: if ever published publicly, change the example config to be less personal -->
 <!-- TODO: when publishing publicly, check ALL todos -->
 <!-- TODO: when publishing publicly, change/remove bye and hi messages -->
 
 ### Example config
 ```
-# remrc for personal PC
-# R: v0.2.0, E: 2024/08/09
+# remrc for personal Windows laptop
+# R: v0.2.0, E: 2024/11/30
 
 # Tips: these are used to easily see the contents of frequently accessed text documents
-tip vimtoremember C:/Cade/PDFs/Utility/ToRememberDocs/VimToRemember.md
-tip shortcutstoremember C:/Cade/PDFs/Utility/ToRememberDocs/ShortcutsToRemember.md
-tip testtodos C:/Cade/Java/testtodos.txt
-tip commandstoremember C:/Cade/PDFs/Utility/ToRememberDocs/CommandsToRemember.md
-tip help C:/Cade/Rust/Misc/remslice/README.md
-tip todos C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
-# TODO: add class schedules and other useful files
+tip help C:/Dev/remslice/README.md
+tip shortcuts C:/Documents/Utility/ShortcutsToRemember.md
+tip commands C:/Documents/Utility/CommandsToRemember.md
+tip todo C:/Lists/Todos/todos.md
 
 # Todo path
-todo C:/Cade/Favorites/Todos/todos_ShortTermSync2.md
+todo C:/Lists/Todos/todos.md
 
-# Aliases
-shell_alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"
-shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
+# Shell aliases
+# Open a Firefox profile and close remslice
+shell_alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"; Get-Process -Name remslice | Stop-Process
+shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; Get-Process -Name remslice | Stop-Process
 ```
 
 ## System Commands
 - `exit`/`quit`/`q` - exit immediately
 - `version`/`ver` - display simple version information
-- `remfetch` - aesthetically display more version information (think neofetch)
+- `remfetch` - aesthetically display more version information
 - `pwd` - display the current working directory
 - `help` - display a simple help screen that points to this README file (if you use this often, consider adding a tip)
 
@@ -132,7 +129,7 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `line {line number}` - print the given line of the currently loaded file
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
-- `tdt` - "todo top": display the top (most recent) entries in the todo file (up until the most recent `#` header); display lowercase alphabetical IDs alongside each entry
+- `tdt` - "todo top": display the top (most recent) entries in the todo file (up until the most recent `##` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file

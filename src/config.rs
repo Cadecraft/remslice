@@ -56,7 +56,6 @@ impl Config {
                     match parsed[0].trim() {
                         "tip" if parsed.len() >= 3 => {
                             // Add a tip
-                            // TODO: test file paths with spaces
                             let mut spacegaps = 0;
                             let mut userpath = String::new();
                             for c in line.trim().chars() {
@@ -89,7 +88,6 @@ impl Config {
                         },
                         "todo" if parsed.len() >= 2 => {
                             // Set the todo path
-                            // TODO: test file paths with spaces
                             let mut spacegaps = 0;
                             let mut userpath = String::new();
                             for c in line.trim().chars() {
@@ -173,7 +171,6 @@ impl Config {
                 return false;
             }
         }
-        // TODO: ensure spaces are preserved in the path arguments (since they're the last argument, it should work out)
     }
 
     /// Get the value of a tip starting with a key

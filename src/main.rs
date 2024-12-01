@@ -8,17 +8,14 @@ mod config;
 mod remfetch;
 
 /* TODO:
-    somewhere to download the binaries? auth pw for score or other sensitive features?
-    allow intaking a file as an argument, or taking flags
-    colors with `crossterm`? `colored`?
-    rem log of commands/responses and dates?
-    randomized responses to certain commands?
-    initial access password (encrypt somehow?) (use a command called auth {password} to access stuff?)
-    refactor: move file operations, grep, etc. into a separate struct
+    feat: allow intaking a file as an argument, or taking flags?
+    feat: colors with `crossterm`? `colored`?
+    feat: opt-in log file of commands/responses and dates?
+    feat: (if log is implemented) display size of log, uptime, etc. in remfetch
+    refactor: move file operations, grep, etc. into a separate struct or file?
     feat: copy file path from tip
     feat: reminders (have timing, store in file, maybe even use notifications)
-    feat: display size of log, uptime, etc. in remfetch
-    feat: cmd to display a range of lines, if multiple args, in a file
+    feat: command to display a range of lines, if multiple args, in a file
     test installing and copying on linux
 */
 
