@@ -1,13 +1,12 @@
 # remslice 🍊
 
-A personal, ergonomic CLI assistant for my miscellaneous needs
+A personal, minimal, ergonomic CLI assistant for my miscellaneous productivity needs
 
-This project is currently in development and not all features are implemented;
-please keep in mind that this is purely intended for my own personal and productivity usecases.
+Please keep in mind that this project is purely intended for my own personal usecases and requirements; the repository is only open source for simplicity.
 
 ## Installation
 
-To build remslice, Cargo must be installed. This is a cross-platform application.
+To build, Cargo must be installed. This is a cross-platform application.
 
 There is also the dependency of `cli-clipboard` for the copy feature:
 - On Windows and macOS, this should work without any additional installation.
@@ -18,11 +17,27 @@ In the directory, run `cargo build` to build or `cargo install --path .` to buil
 It is recommended to add the generated executable to the PATH variable or put it in your bin folder
 for global easy access on the command line.
 
-## Config
+## Features
 
-Use the `remfetch` command to see the directory where your `.remrc` file should be placed (it should be your home directory).
-This file is where all configuration goes.
-Follow this syntax in the `.remrc` file:
+This is meant to be a portable, personal productivity CLI tool that makes various everyday tasks more centralized and efficient without having to leave the keyboard. For specifics, see the configuration and command sections below.
+- Keep track of todos
+- Create aliases to shell commands
+- Generate daily scores to measure personal progress
+- Deal with the clipboard
+- Easily search specific reference files
+
+Some of my everyday usecases:
+- Check the date and time (I keep my taskbar hidden)
+- Add a shell alias to my config file so I can launch firefox profiles without having to enter the profile manager
+- Add todos to a file the moment I think of them using the `tda` command
+
+## Configuration File
+
+All configuration is done in a plain text file called `.remrc`.
+
+Use the `remfetch` command to see the directory where the `.remrc` file should be placed (it should be your home directory).
+
+### Config syntax
 
 - Use the hash (`#`) symbol to start a comment line
 ```
@@ -45,15 +60,31 @@ todo C:/MyFolder/todos_list.md
     - Runs in `powershell` for Windows and `sh` elsewhere
     - Like with the file paths above, you *cannot* use spaces in your alias names.
 ```
-# Runs `firefox -P "Personal` when you type `al ffp`
+# Runs `firefox -P "Personal"` when you type `al ffp`
 shell_alias ffp firefox -P "Personal"
 ```
+
+- `score_p` defines a positive input prompt for daily scoring (see the `score` command)
+```
+# Will ask for a number from 0.0..=1.0 and add it when scoring
+score_p Percent of total day's work I got done
+```
+
+- `score_n` defines a negative input prompt for daily scoring
+```
+# Will ask for a number from 0.0..=1.0 and subtract it when scoring
+score_n Hours wasted on YouTube (0.0 to 1.0)
+```
+
+- `score_divby` defines the number the total score sum is divided by to achieve the final result (default is `5.0`)
+
+- `score_formula_number` defines the number or name used to describe the score formula
 
 <!-- TODO: if ever published publicly, change the example config to be less personal -->
 <!-- TODO: when publishing publicly, check ALL todos -->
 <!-- TODO: when publishing publicly, change/remove bye and hi messages -->
 
-Example config:
+### Example config
 ```
 # remrc for personal PC
 # R: v0.2.0, E: 2024/08/09
@@ -94,7 +125,7 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 <!-- TODO: list all if still unfinished -->
 
 ## Procedure/Action Commands
-- `score` - generate a daily score based on input prompts
+- `score` - generate a daily score based on input prompts defined in your config
 - `tip {nickname}` - load a file based on its defined nickname (searches for the first one starting with the argument) (note: `b` is synonymous with `tip`)
 - `tip {nickname} {grep prompt}` - load a file like above, but automatically call the `grep` command below on it
 - `tip-ls` - list all available tips and their file paths
@@ -125,8 +156,8 @@ Todo files are expected to be in markdown, formatted like this:
 
 ## Etymology?
 
-*Rem is easily forgotten;*
+This name is based on a) REM sleep, b) the thin fresh simplicity of orange slices, and c) an old way of describing version information that I used in some of my projects:
 
-*this program takes utilitarian slices of everyday tools and systems to make remembering things easier,*
-
-*creating a clean and lightweight feel, like an orange slice*
+- Recent version
+- Edit date
+- Most fully tested

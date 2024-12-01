@@ -186,9 +186,10 @@ impl Rem {
     /// Run action: score calculation
     fn run_score(&mut self) {
         // TODO: impl
-        // TODO: different scoring systems?
+        // TODO: get based on config
+        // TODO: remove unused code
         // Defaults
-        let categories_positive: Vec<&str> = vec![
+        /*let categories_positive: Vec<&str> = vec![
             "% exercise completed",
             "% Path agenda completed",
             "Quality LeetCode",
@@ -200,20 +201,20 @@ impl Rem {
             "Hrs YT/news/reels scrolling",
             "Hrs unproductive Discord",
             "# ..."
-        ];
-        let divide_by: f32 = 5.0;
-        let formula_number: &str = "1";
+        ];*/
+        let divide_by: f32 = self.config.score_divby();
+        let formula_number: &str = &self.config.score_formula_number();
         // Obtain relevant information
         println!("Today's questions:");
         let mut daily_score_disp = format!("Daily Score (Formula {}) = (", formula_number);
         let mut total_score: f32 = 0.0;
-        for cat in categories_positive {
+        for cat in self.config.score_positive() {
             println!("{}", cat);
             let uin = utils::get_user_input_decimal(0.0, 1.0);
             total_score += uin;
             daily_score_disp.push_str(&format!(" + {:.2}", uin));
         }
-        for cat in categories_negative {
+        for cat in self.config.score_negative() {
             println!("{}", cat);
             let uin = utils::get_user_input_decimal(0.0, 1.0);
             total_score -= uin;
@@ -289,7 +290,7 @@ impl Rem {
             },
             _ => {
                 // Failed
-                println!("The alias doesn't exist");
+                println!("The shell alias doesn't exist");
             }
         }
     }

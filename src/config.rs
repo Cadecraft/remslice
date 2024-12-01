@@ -213,4 +213,24 @@ impl Config {
         }
         return res;
     }
+
+    /// Get all positive score categories
+    pub fn score_positive(&self) -> Vec<String> {
+        self.score_positive.clone()
+    }
+
+    /// Get all negative score categories
+    pub fn score_negative(&self) -> Vec<String> {
+        self.score_negative.clone()
+    }
+
+    /// Get the score value to divide by
+    pub fn score_divby(&self) -> f32 {
+        self.score_divby
+    }
+
+    /// Get the score formula number/name
+    pub fn score_formula_number(&self) -> String {
+        self.score_formula_number.clone()
+    }
 }
