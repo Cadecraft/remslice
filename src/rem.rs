@@ -420,11 +420,24 @@ impl Rem {
                 } else {
                     // Clear (strikethrough)
                     // Contents should look like: "- the contents" -> "- ~~the contents~~"
-                    for (i, c) in target.chars().enumerate() {
-                        if i == 2 {
+                    let mut chars_after_first_dash = -1;
+                    for c in target.chars() {
+                        if chars_after_first_dash == 2 {
                             res.push_str("~~");
                         }
+                        if c == '-' {
+                            if chars_after_first_dash == -1 {
+                                chars_after_first_dash = 0;
+                            }
+                        }
+                        if chars_after_first_dash != -1 {
+                            chars_after_first_dash += 1;
+                        }
                         res.push(c);
+                    }
+                    if chars_after_first_dash == -1 {
+                        // No dash was found
+                        res.insert_str(0, "~~");
                     }
                     res.push_str("~~");
                 }
