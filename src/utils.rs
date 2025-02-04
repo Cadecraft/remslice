@@ -230,3 +230,41 @@ pub fn generate_next_id(currid: String) -> String {
     }
     res
 }
+
+/// Strikethrough a line of text in markdown
+/// Either clear (strikethrough) or unclear (remove strikethrough), depending on whether already cleared
+pub fn strikethrough_text(target: &str) -> String {
+    let mut res = String::new();
+    if target.find('~').is_some() {
+        // Unclear (remove strikethrough)
+        for c in target.chars() {
+            if c != '~' {
+                res.push(c);
+            }
+        }
+    } else {
+        // Clear (strikethrough)
+        // Contents should look like: "- the contents" -> "- ~~the contents~~"
+        let mut chars_after_first_dash = -1;
+        for c in target.chars() {
+            if chars_after_first_dash == 2 {
+                res.push_str("~~");
+            }
+            if c == '-' {
+                if chars_after_first_dash == -1 {
+                    chars_after_first_dash = 0;
+                }
+            }
+            if chars_after_first_dash != -1 {
+                chars_after_first_dash += 1;
+            }
+            res.push(c);
+        }
+        if chars_after_first_dash == -1 {
+            // No dash was found
+            res.insert_str(0, "~~");
+        }
+        res.push_str("~~");
+    }
+    res
+}

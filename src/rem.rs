@@ -397,51 +397,17 @@ impl Rem {
                 return;
             }
         }
-        // Either clear (strikethrough) OR unclear (remove strikethrough), depending on whehter already cleared
+        // Clear the todo
         match utils::read_file(&self.config.get_todo_path()) {
             Some(contents) => {
                 let mut lines = contents.lines().collect::<Vec<&str>>();
                 // Check bounds
                 if linenum < 1 || linenum > lines.len() {
-                    // Out of bounds
                     println!("Line number pointed to is out of bounds");
                     return;
                 }
-                // TODO: impl both the clear/unclear algorithms
                 let target: String = lines[linenum - 1].to_string();
-                let mut res = String::new();
-                if target.find('~').is_some() {
-                    // Unclear (remove strikethrough)
-                    for c in target.chars() {
-                        if c != '~' {
-                            res.push(c);
-                        }
-                    }
-                } else {
-                    // Clear (strikethrough)
-                    // Contents should look like: "- the contents" -> "- ~~the contents~~"
-                    let mut chars_after_first_dash = -1;
-                    for c in target.chars() {
-                        if chars_after_first_dash == 2 {
-                            res.push_str("~~");
-                        }
-                        if c == '-' {
-                            if chars_after_first_dash == -1 {
-                                chars_after_first_dash = 0;
-                            }
-                        }
-                        if chars_after_first_dash != -1 {
-                            chars_after_first_dash += 1;
-                        }
-                        res.push(c);
-                    }
-                    if chars_after_first_dash == -1 {
-                        // No dash was found
-                        res.insert_str(0, "~~");
-                    }
-                    res.push_str("~~");
-                }
-                // Res has been updated
+                let res: String = utils::strikethrough_text(&target);
                 // Print successful result
                 println!("   {:5} {}", linenum, res);
                 // Update the contents lines
