@@ -127,6 +127,33 @@ pub fn append_to_file(path: &str, to_write: &str) -> bool {
     }
 }
 
+/// Edit the last line in a file given its path, if possible, and return whether successful
+pub fn edit_last_line_of_file(path: &str, new_last_line: &str) -> bool {
+    // Get the contents
+    match read_file(path) {
+        Some(contents) => {
+            // Create the new contents
+            let lines = contents.lines().collect::<Vec<&str>>();
+            if lines.is_empty() {
+                return false;
+            }
+            let mut newcontents = String::new();
+            for (i, line) in lines.iter().enumerate() {
+                if i != lines.len() - 1 {
+                    newcontents.push_str(&format!("{}\n", line));
+                }
+            }
+            // Add the last line
+            newcontents.push_str(&format!("{}\n", new_last_line));
+            // Write the new contents
+            write_to_file(path, &newcontents)
+        },
+        _ => {
+            false
+        }
+    }
+}
+
 /// Write to a file given its path, if possible, and return whether successful
 pub fn write_to_file(path: &str, to_write: &str) -> bool {
     match fs::write(path, to_write) {

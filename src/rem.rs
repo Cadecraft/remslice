@@ -105,6 +105,10 @@ impl Rem {
                 // Clear a todo based on its ID
                 self.run_tdc(parsed[1].clone());
             },
+            "tde" if parsed.len() >= 2 => {
+                // Edit the latest todo
+                self.run_tde(Self::section_portion_of_input(&input));
+            },
             "tdn" => {
                 // Add a new day to the todo log
                 self.run_tdn();
@@ -423,6 +427,15 @@ impl Rem {
                 println!("Todo file could not be accessed");
                 return;
             }
+        }
+    }
+
+    /// Run action: todo edit
+    fn run_tde(&self, s: String) {
+        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &format!("- {}", s)) {
+            println!("- {}", s);
+        } else {
+            println!("Last todo could not be edited");
         }
     }
 
