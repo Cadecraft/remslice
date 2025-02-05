@@ -127,12 +127,11 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; G
 - `tdt` - "todo top": display the top (most recent) entries in the todo file (up until the most recent `##` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
-- `tde` - "todo edit": edit the topmost todo entry, used for making a correction
+- `tde` - "todo edit": edit the topmost todo entry by replacing it, used for making a correction
+- `tdae` - "todo append-edit": append text to the topmost todo entry, used for making a correction
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
 - `al {shell alias}` - run the command defined by a certain shell alias in the config file
 - `al-ls` - list all available aliases and their file paths
-
-<!-- TODO: tdae ("todo append edit") should append to the last line, rather than a new todo -->
 
 ## More
 

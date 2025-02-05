@@ -128,7 +128,8 @@ pub fn append_to_file(path: &str, to_write: &str) -> bool {
 }
 
 /// Edit the last line in a file given its path, if possible, and return whether successful
-pub fn edit_last_line_of_file(path: &str, new_last_line: &str) -> bool {
+/// If append is set, then the new last line is added onto the old last line; otherwise, it replaces it
+pub fn edit_last_line_of_file(path: &str, new_last_line: &str, append: bool) -> bool {
     // Get the contents
     match read_file(path) {
         Some(contents) => {
@@ -144,7 +145,11 @@ pub fn edit_last_line_of_file(path: &str, new_last_line: &str) -> bool {
                 }
             }
             // Add the last line
-            newcontents.push_str(&format!("{}\n", new_last_line));
+            if append {
+                newcontents.push_str(&format!("{}{}\n", lines.last().unwrap_or(&""), new_last_line));
+            } else {
+                newcontents.push_str(&format!("{}\n", new_last_line));
+            }
             // Write the new contents
             write_to_file(path, &newcontents)
         },

@@ -109,6 +109,10 @@ impl Rem {
                 // Edit the latest todo
                 self.run_tde(Self::section_portion_of_input(&input));
             },
+            "tdae" if parsed.len() >= 2 => {
+                // Append-edit the latest todo
+                self.run_tdae(Self::section_portion_of_input(&input));
+            },
             "tdn" => {
                 // Add a new day to the todo log
                 self.run_tdn();
@@ -432,10 +436,28 @@ impl Rem {
 
     /// Run action: todo edit
     fn run_tde(&self, s: String) {
-        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &format!("- {}", s)) {
+        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &format!("- {}", s), false) {
             println!("- {}", s);
         } else {
-            println!("Last todo could not be edited");
+            println!("Topmost todo could not be edited");
+        }
+    }
+
+    /// Run action: todo append edit
+    fn run_tdae(&self, s: String) {
+        let formatted_to_append: String = match s.chars().next().unwrap_or(' ') {
+            ',' | ';' | '-' | '.' => {
+                // Punctuation, so include it
+                s.clone()
+            },
+            _ => {
+                format!(" {}", s)
+            }
+        };
+        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &formatted_to_append, true) {
+            println!("Appended to the topmost todo");
+        } else {
+            println!("Topmost todo could not be edited");
         }
     }
 
