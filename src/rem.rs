@@ -78,7 +78,7 @@ impl Rem {
             },
             "tip" | "b" if parsed.len() >= 3 => {
                 // Tip and grep
-                self.run_tip(parsed[1].clone(), Some(parsed[2].clone()));
+                self.run_tip(parsed[1].clone(), Some(utils::trailing_portion_of_input(&input, 3).to_lowercase()));
             },
             "tip" | "b" if parsed.len() == 2 => {
                 // Tip
@@ -90,15 +90,15 @@ impl Rem {
             },
             "grep" if parsed.len() >= 2 => {
                 // Grep (case-insensitive)
-                self.run_grep(Self::section_portion_of_input(&input).to_lowercase());
+                self.run_grep(utils::trailing_portion_of_input(&input, 2).to_lowercase());
             },
             "line" if parsed.len() >= 2 => {
                 // Print the line number
-                self.run_line(Self::section_portion_of_input(&input).to_lowercase());
+                self.run_line(utils::trailing_portion_of_input(&input, 2).to_lowercase());
             },
             "tda" if parsed.len() >= 2 => {
                 // Add a todo
-                self.run_tda(Self::section_portion_of_input(&input));
+                self.run_tda(utils::trailing_portion_of_input(&input, 2));
             },
             "tdt" => {
                 // Display the top of the todo list (1 level)
@@ -114,11 +114,11 @@ impl Rem {
             },
             "tde" if parsed.len() >= 2 => {
                 // Edit the latest todo
-                self.run_tde(Self::section_portion_of_input(&input));
+                self.run_tde(utils::trailing_portion_of_input(&input, 2));
             },
             "tdae" if parsed.len() >= 2 => {
                 // Append-edit the latest todo
-                self.run_tdae(Self::section_portion_of_input(&input));
+                self.run_tdae(utils::trailing_portion_of_input(&input, 2));
             },
             "tdn" => {
                 // Add a new day to the todo log
@@ -397,13 +397,6 @@ impl Rem {
                     }
                     currid = utils::generate_next_id(currid.clone());
                 }
-                /*for line in contents.lines().rev() {
-                    if line.starts_with("##") {
-                        break;
-                    }
-                    // Line goes above res (because iterating in reverse)
-                    res = format!("{}\n{}", line, res);
-                }*/
                 println!("{}", res);
             },
             _ => {
@@ -507,21 +500,6 @@ impl Rem {
         let mut res: Vec<String> = Vec::new();
         for arg in splitted {
             res.push(arg.trim().to_lowercase().to_string());
-        }
-        res
-    }
-
-    /// Get the second portion of the input (everything after the first argument)
-    fn section_portion_of_input(input: &str) -> String {
-        // After the first word, get everything else
-        let mut found_first_space: bool = false;
-        let mut res = String::new();
-        for c in input.trim().chars() {
-            if found_first_space {
-                res.push(c);
-            } else if c == ' ' {
-                found_first_space = true;
-            }
         }
         res
     }

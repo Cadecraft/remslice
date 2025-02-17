@@ -8,7 +8,6 @@ mod config;
 mod remfetch;
 
 /* TODO:
-    feat: rem_alias, which points to a different rem command (essentially allowing you to bypass starting each alias with `al`)
     feat: allow intaking a file as an argument, or taking flags?
     feat: colors with `crossterm`? `colored`?
     feat: opt-in log file of commands/responses and dates?

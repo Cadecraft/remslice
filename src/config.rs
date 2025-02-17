@@ -58,15 +58,7 @@ impl Config {
                     match parsed[0].trim() {
                         "tip" if parsed.len() >= 3 => {
                             // Add a tip
-                            let mut spacegaps = 0;
-                            let mut userpath = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 2 {
-                                    userpath.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let userpath = utils::trailing_portion_of_input(line, 3);
                             self.tips.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: userpath
@@ -74,15 +66,7 @@ impl Config {
                         },
                         "shell_alias" if parsed.len() >= 3 => {
                             // Add a shell alias
-                            let mut spacegaps = 0;
-                            let mut usercommand = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 2 {
-                                    usercommand.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let usercommand = utils::trailing_portion_of_input(line, 3);
                             self.shell_aliases.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: usercommand
@@ -90,15 +74,7 @@ impl Config {
                         },
                         "rem_alias" if parsed.len() >= 3 => {
                             // Add a rem alias
-                            let mut spacegaps = 0;
-                            let mut usercommand = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 2 {
-                                    usercommand.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let usercommand = utils::trailing_portion_of_input(line, 3);
                             self.rem_aliases.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: usercommand
@@ -106,54 +82,22 @@ impl Config {
                         },
                         "todo" if parsed.len() >= 2 => {
                             // Set the todo path
-                            let mut spacegaps = 0;
-                            let mut userpath = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 1 {
-                                    userpath.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
-                            self.todo_path = parsed[1].trim().to_string()
+                            let userpath = utils::trailing_portion_of_input(line, 2);
+                            self.todo_path = userpath;
                         },
                         "score_p" if parsed.len() >= 2 => {
                             // Add a positive score category
-                            let mut spacegaps = 0;
-                            let mut userstring = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 1 {
-                                    userstring.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let userstring = utils::trailing_portion_of_input(line, 2);
                             self.score_positive.push(userstring);
                         },
                         "score_n" if parsed.len() >= 2 => {
                             // Add a negative score category
-                            let mut spacegaps = 0;
-                            let mut userstring = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 1 {
-                                    userstring.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let userstring = utils::trailing_portion_of_input(line, 2);
                             self.score_negative.push(userstring);
                         },
                         "score_divby" if parsed.len() >= 2 => {
                             // Set the score division by
-                            let mut spacegaps = 0;
-                            let mut userdivby = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 1 {
-                                    userdivby.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            let userdivby = utils::trailing_portion_of_input(line, 2);
                             match userdivby.parse::<f32>() {
                                 Ok(res) => {
                                     self.score_divby = res;
@@ -164,20 +108,12 @@ impl Config {
                             };
                         },
                         "score_formula_number" if parsed.len() >= 2 => {
-                            // Set the score division by
-                            let mut spacegaps = 0;
-                            let mut usernum = String::new();
-                            for c in line.trim().chars() {
-                                if spacegaps >= 1 {
-                                    usernum.push(c);
-                                } else if c == ' ' {
-                                    spacegaps += 1;
-                                }
-                            }
+                            // Set the score formula number (technically an identifying string, not a number)
+                            let usernum = utils::trailing_portion_of_input(line, 2);
                             self.score_formula_number = usernum;
                         },
                         _ => {
-                            // None
+                            // None: do not cause errors, so that remslice can operate smoothly
                         }
                     }
                 }
