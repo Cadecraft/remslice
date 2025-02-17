@@ -29,11 +29,18 @@ impl Rem {
     }
 
     /// Respond to a raw user-inputted string and return whether the program should quit
-    pub fn respond_to_input(&mut self, input: String) -> bool {
+    pub fn respond_to_input(&mut self, input: String, recursion_level: i32) -> bool {
+        // Ensure we aren't in an infinite loop
+        const MAX_RECURSION_LEVEL: i32 = 100;
+        if recursion_level > MAX_RECURSION_LEVEL {
+            println!("Infinitely recursive command encountered (recursed over {MAX_RECURSION_LEVEL} times)");
+            return false
+        }
         // Parse
         let parsed: Vec<String> = Self::parse_input(&input);
         // Respond based on the input
-        match Self::argument_at_index(&parsed, 0) {
+        let first_arg = Self::argument_at_index(&parsed, 0);
+        match first_arg {
             "score" => {
                 // Score
                 self.run_score();
@@ -154,7 +161,7 @@ impl Rem {
                 match utils::paste_from_clipboard() {
                     Some(contents) => {
                         println!("Running: `{}`", contents);
-                        if self.respond_to_input(contents) {
+                        if self.respond_to_input(contents, recursion_level + 1) {
                             // Should quit
                             return true;
                         }
@@ -176,8 +183,18 @@ impl Rem {
                 println!("{}", output);
             },
             _ => {
-                // No match
-                println!("?");
+                // No match out of existing commands
+                // Check all rem aliases
+                match self.config.get_rem_alias_value(first_arg) {
+                    Some(val) => {
+                        // Execute the current rem alias
+                        // TODO: escape an infinite loop
+                        self.run_rem_alias(&val, recursion_level + 1);
+                    }
+                    _ => {
+                        println!("?");
+                    }
+                }
             }
         }
         false
@@ -293,6 +310,8 @@ impl Rem {
         // Display all aliases
         println!("All shell aliases added:");
         println!("{}", self.config.display_shell_aliases());
+        println!("All rem aliases added:");
+        println!("{}", self.config.display_rem_aliases());
     }
 
     /// Run action: print
@@ -505,5 +524,10 @@ impl Rem {
             }
         }
         res
+    }
+
+    /// Run a rem alias
+    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) {
+        self.respond_to_input(alias.to_string(), recursion_level + 1);
     }
 }

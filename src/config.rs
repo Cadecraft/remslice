@@ -11,6 +11,7 @@ pub struct Config {
     remrc_path: String,
     tips: Vec<TipPair>,
     shell_aliases: Vec<TipPair>,
+    rem_aliases: Vec<TipPair>,
     todo_path: String,
     score_positive: Vec<String>,
     score_negative: Vec<String>,
@@ -25,6 +26,7 @@ impl Config {
             remrc_path: utils::get_config_path(),
             tips: Vec::new(),
             shell_aliases: Vec::new(),
+            rem_aliases: Vec::new(),
             todo_path: "default_todos.md".to_string(),
             score_positive: Vec::new(),
             score_negative: Vec::new(),
@@ -71,7 +73,7 @@ impl Config {
                             });
                         },
                         "shell_alias" if parsed.len() >= 3 => {
-                            // Add an alias
+                            // Add a shell alias
                             let mut spacegaps = 0;
                             let mut usercommand = String::new();
                             for c in line.trim().chars() {
@@ -82,6 +84,22 @@ impl Config {
                                 }
                             }
                             self.shell_aliases.push(TipPair {
+                                key: parsed[1].trim().to_string(),
+                                value: usercommand
+                            });
+                        },
+                        "rem_alias" if parsed.len() >= 3 => {
+                            // Add a rem alias
+                            let mut spacegaps = 0;
+                            let mut usercommand = String::new();
+                            for c in line.trim().chars() {
+                                if spacegaps >= 2 {
+                                    usercommand.push(c);
+                                } else if c == ' ' {
+                                    spacegaps += 1;
+                                }
+                            }
+                            self.rem_aliases.push(TipPair {
                                 key: parsed[1].trim().to_string(),
                                 value: usercommand
                             });
@@ -192,7 +210,7 @@ impl Config {
         return res;
     }
 
-    /// Get the value of an alias matching a key
+    /// Get the value of a shell alias matching a key
     pub fn get_shell_alias_value(&self, search_for: &str) -> Option<String> {
         for alias in &self.shell_aliases {
             if alias.key == search_for {
@@ -202,10 +220,29 @@ impl Config {
         return None;
     }
 
-    /// Display all aliases
+    /// Get the value of a rem alias matching a key
+    pub fn get_rem_alias_value(&self, search_for: &str) -> Option<String> {
+        for alias in &self.rem_aliases {
+            if alias.key == search_for {
+                return Some(alias.value.clone());
+            }
+        }
+        return None;
+    }
+
+    /// Display all shell aliases
     pub fn display_shell_aliases(&self) -> String {
         let mut res = String::new();
         for alias in &self.shell_aliases {
+            res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
+        }
+        return res;
+    }
+
+    /// Display all rem aliases
+    pub fn display_rem_aliases(&self) -> String {
+        let mut res = String::new();
+        for alias in &self.rem_aliases {
             res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
         }
         return res;

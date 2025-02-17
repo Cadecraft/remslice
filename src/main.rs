@@ -28,7 +28,7 @@ fn main() {
     // Begin the input loop immediately
     loop {
         let user_input = utils::get_user_input_line();
-        let should_quit = rem.respond_to_input(user_input);
+        let should_quit = rem.respond_to_input(user_input, 0);
         if should_quit {
             break;
         }

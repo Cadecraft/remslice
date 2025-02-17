@@ -51,7 +51,7 @@ tip tipname C:/MyFolder/thing.txt
 tip anothertip C:/Other/Path/anotherthing.txt
 ```
 
-- `todo` defines the path to the file used by the todo features (ex. the `tda` command) (see the More section below for the format)
+- `todo` defines the path to the file used by the todo features (e.g. the `tda` command) (see the More section below for the format)
 ```
 todo C:/MyFolder/todos_list.md
 ```
@@ -62,6 +62,14 @@ todo C:/MyFolder/todos_list.md
 ```
 # Runs `firefox -P "Personal"` when you type `al ffp`
 shell_alias ffp firefox -P "Personal"
+```
+
+- `rem_alias` defines an alias to a top-level rem command
+    - This can be any valid rem command, including another `rem_alias`
+    - Because of the recursive nature of these aliases, recursion cannot exceed 100 levels, to prevent infinite loops (i.e. using `rem_alias crash crash` then running `crash` is not allowed)
+```
+# Runs tdt when the 't' command is entered
+rem_alias t tdt
 ```
 
 - `score_p` defines a positive input prompt for daily scoring (see the `score` command)
@@ -98,6 +106,8 @@ todo C:/Lists/Todos/todos.md
 # Open a Firefox profile and close remslice
 shell_alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"; Get-Process -Name remslice | Stop-Process
 shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; Get-Process -Name remslice | Stop-Process
+# Make the above only take one keystroke
+rem_alias h al ffc
 ```
 
 ## System Commands
@@ -131,7 +141,7 @@ shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; G
 - `tdae` - "todo append-edit": append text to the topmost todo entry, used for making a correction
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
 - `al {shell alias}` - run the command defined by a certain shell alias in the config file
-- `al-ls` - list all available aliases and their file paths
+- `al-ls` - list all available shell and rem aliases and what they refer to
 
 ## More
 
