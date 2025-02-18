@@ -11,6 +11,7 @@ use chrono;
 use home;
 
 // Keep the line ending '\n' for consistency in editing files
+#[allow(dead_code)]
 const LINE_ENDING: &'static str = "\n";
 
 /// Get the user's input
