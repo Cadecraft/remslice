@@ -292,7 +292,7 @@ impl Rem {
     /// Run action: alias
     fn run_al(&mut self, alias: String) {
         // Search for the given file and display it, so a tip can be found
-        match self.config.get_shell_alias_value(&alias) {
+        match self.config.get_shell_alias_command(&alias) {
             Some(alias_value) => {
                 // Open and load the file, if possible
                 let res = utils::run_command(&alias_value);
@@ -407,16 +407,15 @@ impl Rem {
 
     /// Clear a todo based on its ID
     fn run_tdc(&self, id: String) {
-        let mut linenum: usize = 0;
-        match self.todos_ids.get(&id) {
+        let linenum: usize = match self.todos_ids.get(&id) {
             Some(l) => {
-                linenum = *l;
+                *l
             },
             _ => {
                 println!("ID does not exist");
                 return;
             }
-        }
+        };
         // Clear the todo
         match utils::read_file(&self.config.get_todo_path()) {
             Some(contents) => {
