@@ -64,6 +64,13 @@ todo C:/MyFolder/todos_list.md
 shell_alias ffp firefox -P "Personal"
 ```
 
+- `shell_alias_quitting` defines an alias to a shell command that also immediately quits remslice after running, to be used a temporary launcher that makes other commands quicker
+    - Same details as `shell_alias` above
+```
+# Launches Firefox and quits remslice when you type `al ffq`
+shell_alias_quitting ffq firefox -P "Personal"
+```
+
 - `rem_alias` defines an alias to a top-level rem command
     - This can be any valid rem command, including another `rem_alias`
     - Because of the recursive nature of these aliases, recursion cannot exceed 100 levels, to prevent infinite loops (i.e. using `rem_alias crash crash` then running `crash` is not allowed)
@@ -91,7 +98,7 @@ score_n Hours wasted on YouTube (0.0 to 1.0)
 ### Example config
 ```
 # remrc for personal Windows laptop
-# R: v0.2.0, E: 2024/11/30
+# R: v0.2.0, E: 2025/06/27
 
 # Tips: these are used to easily see the contents of frequently accessed text documents
 tip help C:/Dev/remslice/README.md
@@ -103,9 +110,10 @@ tip todo C:/Lists/Todos/todos.md
 todo C:/Lists/Todos/todos.md
 
 # Shell aliases
+shell_alias sayhi echo "hi from the shell"
 # Open a Firefox profile and close remslice
-shell_alias ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"; Get-Process -Name remslice | Stop-Process
-shell_alias ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"; Get-Process -Name remslice | Stop-Process
+shell_alias_quitting ffp & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "Personal"
+shell_alias_quitting ffc & "C:/Program Files/Mozilla Firefox/firefox.exe" -P "College"
 # Make the above only take one keystroke
 rem_alias h al ffc
 ```

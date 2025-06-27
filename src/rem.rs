@@ -126,7 +126,10 @@ impl Rem {
             },
             "al" => {
                 // Run the command represented by an alias
-                self.run_al(parsed[1].clone());
+                if self.run_al(parsed[1].clone()) {
+                    // Should quit
+                    return true;
+                }
             },
             "al-ls" => {
                 // List all aliases and their commands
@@ -289,20 +292,22 @@ impl Rem {
         println!("{}", self.config.display_tips());
     }
 
-    /// Run action: alias
-    fn run_al(&mut self, alias: String) {
-        // Search for the given file and display it, so a tip can be found
-        match self.config.get_shell_alias_command(&alias) {
-            Some(alias_value) => {
-                // Open and load the file, if possible
-                let res = utils::run_command(&alias_value);
-                println!("{}", res);
+    /// Run action: alias (return whether should quit)
+    fn run_al(&mut self, alias: String) -> bool {
+        match self.config.get_shell_alias(&alias) {
+            Some(alias) => {
+                // Run the alias if possible, then quit if successful and desired
+                let res = utils::run_command(&alias.command);
+                if res && alias.quit_after_running {
+                    return true;
+                }
             },
             _ => {
-                // Failed
                 println!("The shell alias doesn't exist");
             }
         }
+        // TODO: better indicator of "quit" or "not quit" (use an enum?)
+        false
     }
 
     /// Run action: alias list

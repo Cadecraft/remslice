@@ -6,10 +6,11 @@ struct Pair {
     value: String
 }
 
-struct ShellAlias {
-    key: String,
-    command: String,
-    quit_after_running: bool
+#[derive(Clone)]
+pub struct ShellAlias {
+    pub key: String,
+    pub command: String,
+    pub quit_after_running: bool
 }
 
 /// Stores a rem config based on the remrc file
@@ -77,6 +78,15 @@ impl Config {
                                 key: parsed[1].trim().to_string(),
                                 command: usercommand,
                                 quit_after_running: false
+                            });
+                        },
+                        "shell_alias_quitting" if parsed.len() >= 3 => {
+                            // Add a shell alias that quits after running
+                            let usercommand = utils::trailing_portion_of_input(line, 3);
+                            self.shell_aliases.push(ShellAlias {
+                                key: parsed[1].trim().to_string(),
+                                command: usercommand,
+                                quit_after_running: true
                             });
                         },
                         "rem_alias" if parsed.len() >= 3 => {
@@ -153,11 +163,11 @@ impl Config {
         return res;
     }
 
-    /// Get the value of a shell alias matching a key
-    pub fn get_shell_alias_command(&self, search_for: &str) -> Option<String> {
+    /// Get the information about a shell alias matching a key
+    pub fn get_shell_alias(&self, search_for: &str) -> Option<ShellAlias> {
         for alias in &self.shell_aliases {
             if alias.key == search_for {
-                return Some(alias.command.clone());
+                return Some(alias.clone());
             }
         }
         return None;
