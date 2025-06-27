@@ -191,8 +191,10 @@ impl Rem {
                 match self.config.get_rem_alias_value(first_arg) {
                     Some(val) => {
                         // Execute the current rem alias
-                        // TODO: escape an infinite loop
-                        self.run_rem_alias(&val, recursion_level + 1);
+                        if self.run_rem_alias(&val, recursion_level + 1) {
+                            // Should quit
+                            return true;
+                        }
                     }
                     _ => {
                         println!("?");
@@ -508,8 +510,8 @@ impl Rem {
         res
     }
 
-    /// Run a rem alias
-    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) {
-        self.respond_to_input(alias.to_string(), recursion_level + 1);
+    /// Run a rem alias, returning whether to quit
+    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) -> bool {
+        self.respond_to_input(alias.to_string(), recursion_level + 1)
     }
 }
