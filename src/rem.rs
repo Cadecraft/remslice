@@ -126,7 +126,10 @@ impl Rem {
             },
             "al" => {
                 // Run the command represented by an alias
-                self.run_al(parsed[1].clone());
+                if self.run_al(parsed[1].clone()) {
+                    // Should quit
+                    return true;
+                }
             },
             "al-ls" => {
                 // List all aliases and their commands
@@ -188,8 +191,10 @@ impl Rem {
                 match self.config.get_rem_alias_value(first_arg) {
                     Some(val) => {
                         // Execute the current rem alias
-                        // TODO: escape an infinite loop
-                        self.run_rem_alias(&val, recursion_level + 1);
+                        if self.run_rem_alias(&val, recursion_level + 1) {
+                            // Should quit
+                            return true;
+                        }
                     }
                     _ => {
                         println!("?");
@@ -289,20 +294,22 @@ impl Rem {
         println!("{}", self.config.display_tips());
     }
 
-    /// Run action: alias
-    fn run_al(&mut self, alias: String) {
-        // Search for the given file and display it, so a tip can be found
-        match self.config.get_shell_alias_value(&alias) {
-            Some(alias_value) => {
-                // Open and load the file, if possible
-                let res = utils::run_command(&alias_value);
-                println!("{}", res);
+    /// Run action: alias (return whether should quit)
+    fn run_al(&mut self, alias: String) -> bool {
+        match self.config.get_shell_alias(&alias) {
+            Some(alias) => {
+                // Run the alias if possible, then quit if successful and desired
+                let res = utils::run_command(&alias.command);
+                if res && alias.quit_after_running {
+                    return true;
+                }
             },
             _ => {
-                // Failed
                 println!("The shell alias doesn't exist");
             }
         }
+        // TODO: better indicator of "quit" or "not quit" (use an enum?)
+        false
     }
 
     /// Run action: alias list
@@ -407,16 +414,15 @@ impl Rem {
 
     /// Clear a todo based on its ID
     fn run_tdc(&self, id: String) {
-        let mut linenum: usize = 0;
-        match self.todos_ids.get(&id) {
+        let linenum: usize = match self.todos_ids.get(&id) {
             Some(l) => {
-                linenum = *l;
+                *l
             },
             _ => {
                 println!("ID does not exist");
                 return;
             }
-        }
+        };
         // Clear the todo
         match utils::read_file(&self.config.get_todo_path()) {
             Some(contents) => {
@@ -504,8 +510,8 @@ impl Rem {
         res
     }
 
-    /// Run a rem alias
-    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) {
-        self.respond_to_input(alias.to_string(), recursion_level + 1);
+    /// Run a rem alias, returning whether to quit
+    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) -> bool {
+        self.respond_to_input(alias.to_string(), recursion_level + 1)
     }
 }

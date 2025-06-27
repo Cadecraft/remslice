@@ -194,17 +194,19 @@ pub fn get_os() -> String {
     OS.to_string()
 }
 
-/// Run a command
-pub fn run_command(command: &str) -> String {
+/// Run a command, print an informational message, and return whether successful
+pub fn run_command(command: &str) -> bool {
     match OS {
         "windows" => {
             // Use powershell
             match Command::new("powershell").args(["-c", command]).spawn() {
                 Ok(_theres) => {
-                    "Command executed via powershell".to_string()
+                    println!("Command executed via powershell");
+                    true
                 },
                 _ => {
-                    "Failed to execute command via powershell".to_string()
+                    println!("Failed to execute command via powershell");
+                    false
                 }
             }
         },
@@ -212,10 +214,12 @@ pub fn run_command(command: &str) -> String {
             // Use sh
             match Command::new("sh").args(["-c", command]).spawn() {
                 Ok(_theres) => {
-                    "Command executed via sh".to_string()
+                    println!("Command executed via sh");
+                    true
                 },
                 _ => {
-                    "Failed to execute command via sh".to_string()
+                    println!("Failed to execute command via sh");
+                    false
                 }
             }
         }

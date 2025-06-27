@@ -1,17 +1,24 @@
 use crate::utils;
 
 /// Stores a tip key/value pair
-struct TipPair {
+struct Pair {
     key: String,
     value: String
+}
+
+#[derive(Clone)]
+pub struct ShellAlias {
+    pub key: String,
+    pub command: String,
+    pub quit_after_running: bool
 }
 
 /// Stores a rem config based on the remrc file
 pub struct Config {
     remrc_path: String,
-    tips: Vec<TipPair>,
-    shell_aliases: Vec<TipPair>,
-    rem_aliases: Vec<TipPair>,
+    tips: Vec<Pair>,
+    shell_aliases: Vec<ShellAlias>,
+    rem_aliases: Vec<Pair>,
     todo_path: String,
     score_positive: Vec<String>,
     score_negative: Vec<String>,
@@ -59,7 +66,7 @@ impl Config {
                         "tip" if parsed.len() >= 3 => {
                             // Add a tip
                             let userpath = utils::trailing_portion_of_input(line, 3);
-                            self.tips.push(TipPair {
+                            self.tips.push(Pair {
                                 key: parsed[1].trim().to_string(),
                                 value: userpath
                             });
@@ -67,15 +74,25 @@ impl Config {
                         "shell_alias" if parsed.len() >= 3 => {
                             // Add a shell alias
                             let usercommand = utils::trailing_portion_of_input(line, 3);
-                            self.shell_aliases.push(TipPair {
+                            self.shell_aliases.push(ShellAlias {
                                 key: parsed[1].trim().to_string(),
-                                value: usercommand
+                                command: usercommand,
+                                quit_after_running: false
+                            });
+                        },
+                        "shell_alias_quitting" if parsed.len() >= 3 => {
+                            // Add a shell alias that quits after running
+                            let usercommand = utils::trailing_portion_of_input(line, 3);
+                            self.shell_aliases.push(ShellAlias {
+                                key: parsed[1].trim().to_string(),
+                                command: usercommand,
+                                quit_after_running: true
                             });
                         },
                         "rem_alias" if parsed.len() >= 3 => {
                             // Add a rem alias
                             let usercommand = utils::trailing_portion_of_input(line, 3);
-                            self.rem_aliases.push(TipPair {
+                            self.rem_aliases.push(Pair {
                                 key: parsed[1].trim().to_string(),
                                 value: usercommand
                             });
@@ -146,11 +163,11 @@ impl Config {
         return res;
     }
 
-    /// Get the value of a shell alias matching a key
-    pub fn get_shell_alias_value(&self, search_for: &str) -> Option<String> {
+    /// Get the information about a shell alias matching a key
+    pub fn get_shell_alias(&self, search_for: &str) -> Option<ShellAlias> {
         for alias in &self.shell_aliases {
             if alias.key == search_for {
-                return Some(alias.value.clone());
+                return Some(alias.clone());
             }
         }
         return None;
@@ -170,7 +187,12 @@ impl Config {
     pub fn display_shell_aliases(&self) -> String {
         let mut res = String::new();
         for alias in &self.shell_aliases {
-            res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
+            res.push_str(&format!(
+                "   {}{} : {}\n",
+                alias.key,
+                if alias.quit_after_running { " (Q)" } else { "" },
+                alias.command
+            ));
         }
         return res;
     }
