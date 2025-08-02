@@ -2,29 +2,27 @@ use crate::remdata;
 use crate::utils;
 use crate::config::Config;
 use crate::remfetch;
+use crate::command;
+use crate::remstate;
 use std::collections::hash_map::HashMap;
 
 /// The data and methods for Rem
 pub struct Rem {
-    rem_data: remdata::RemData,
-    ping_count: u32,
-    to_copy_val: String,
-    file_loaded: String,
-    // Store the ID (string of lowercase letters) and corresponding line NUMBER (not index)
-    todos_ids: HashMap<String, usize>,
-    config: Config
+    state: remstate::RemState
 }
 
 impl Rem {
     /// Create a new Rem
     pub fn new(rem_data: remdata::RemData) -> Rem {
         Rem {
-            rem_data,
-            ping_count: 0,
-            to_copy_val: "[empty]".to_string(),
-            file_loaded: String::new(),
-            todos_ids: HashMap::new(),
-            config: Config::new()
+            state: remstate::RemState {
+                rem_data,
+                ping_count: 0,
+                to_copy_val: "[empty]".to_string(),
+                file_loaded: String::new(),
+                todos_ids: HashMap::new(),
+                config: Config::new()
+            }
         }
     }
 
@@ -36,11 +34,40 @@ impl Rem {
             println!("Infinitely recursive command encountered (recursed over {MAX_RECURSION_LEVEL} times)");
             return false
         }
-        // Parse
-        let parsed: Vec<String> = Self::parse_input(&input);
-        // Respond based on the input
-        let first_arg = Self::argument_at_index(&parsed, 0);
-        match first_arg {
+        // TODO: refactor all into run_command
+        let res = command::run_command(&input, &mut self.state);
+        match res {
+            Some(command_res) => {
+                match command_res {
+                    command::CommandResult::EndProgram => {
+                        true
+                    },
+                    command::CommandResult::Nominal => false
+                }
+            },
+            None => {
+                // TODO: refactor this?
+                let parsed: Vec<String> = Self::parse_input(&input);
+                let first_arg = Self::argument_at_index(&parsed, 0);
+                match self.state.config.get_rem_alias_value(first_arg) {
+                    Some(val) => {
+                        // Execute the current rem alias
+                        if self.run_rem_alias(&val, recursion_level + 1) {
+                            // Should quit
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                    _ => {
+                        println!("?");
+                        false
+                    }
+                }
+            }
+        }
+
+        /*match first_arg {
             "score" => {
                 // Score
                 self.run_score();
@@ -141,11 +168,11 @@ impl Rem {
             },
             "copy" | "y" => {
                 // Try to copy whatever is in the copy val
-                utils::copy_to_clipboard(&self.to_copy_val);
-                if self.to_copy_val.chars().count() > 6 {
-                    println!("Yanked string starting with '{}'", &self.to_copy_val[..4]);
+                utils::copy_to_clipboard(&self.state.to_copy_val);
+                if self.state.to_copy_val.chars().count() > 6 {
+                    println!("Yanked string starting with '{}'", &self.state.to_copy_val[..4]);
                 } else {
-                    println!("Yanked string '{}'", self.to_copy_val);
+                    println!("Yanked string '{}'", self.state.to_copy_val);
                 }
             },
             "paste" | "p" => {
@@ -182,13 +209,13 @@ impl Rem {
             "time" => {
                 // Get the current time
                 let output = utils::get_time_formatted();
-                self.to_copy_val = output.clone();
+                self.state.to_copy_val = output.clone();
                 println!("{}", output);
             },
             _ => {
                 // No match out of existing commands
                 // Check all rem aliases
-                match self.config.get_rem_alias_value(first_arg) {
+                match self.state.config.get_rem_alias_value(first_arg) {
                     Some(val) => {
                         // Execute the current rem alias
                         if self.run_rem_alias(&val, recursion_level + 1) {
@@ -202,7 +229,7 @@ impl Rem {
                 }
             }
         }
-        false
+        false*/
     }
 
     /// Run action: help
@@ -216,19 +243,19 @@ impl Rem {
     /// Run action: score calculation
     fn run_score(&mut self) {
         // Get based on config
-        let divide_by: f32 = self.config.score_divby();
-        let formula_number: &str = &self.config.score_formula_number();
+        let divide_by: f32 = self.state.config.score_divby();
+        let formula_number: &str = &self.state.config.score_formula_number();
         // Obtain relevant information
         println!("Today's questions:");
         let mut daily_score_disp = format!("Daily Score (Formula {}) = (", formula_number);
         let mut total_score: f32 = 0.0;
-        for cat in self.config.score_positive() {
+        for cat in self.state.config.score_positive() {
             println!("{}", cat);
             let uin = utils::get_user_input_decimal(0.0, 1.0);
             total_score += uin;
             daily_score_disp.push_str(&format!(" + {:.2}", uin));
         }
-        for cat in self.config.score_negative() {
+        for cat in self.state.config.score_negative() {
             println!("{}", cat);
             let uin = utils::get_user_input_decimal(0.0, 1.0);
             total_score -= uin;
@@ -237,7 +264,7 @@ impl Rem {
         // Calculate and format
         total_score /= divide_by;
         daily_score_disp.push_str(&format!(") / {} = {:.2}", divide_by, total_score));
-        self.to_copy_val = daily_score_disp.clone();
+        self.state.to_copy_val = daily_score_disp.clone();
         // Create the score report
         println!("Today's daily score:");
         println!("{}", daily_score_disp);
@@ -257,13 +284,13 @@ impl Rem {
     /// Run action: tip
     fn run_tip(&mut self, key: String, grepval: Option<String>) {
         // Search for the given file and display it, so a tip can be found
-        match self.config.get_tip_value(&key) {
+        match self.state.config.get_tip_value(&key) {
             Some(tip_value) => {
                 // Open and load the file, if possible
                 match utils::read_file(&tip_value) {
                     Some(thecontents) => {
                         // Load the file
-                        self.file_loaded = thecontents.clone();
+                        self.state.file_loaded = thecontents.clone();
                         println!("The file at {} is loaded into the buffer.", tip_value);
                         match grepval {
                             // Automatically grep
@@ -291,12 +318,12 @@ impl Rem {
     fn run_tip_ls(&self) {
         // Display all tips
         println!("All tips added:");
-        println!("{}", self.config.display_tips());
+        println!("{}", self.state.config.display_tips());
     }
 
     /// Run action: alias (return whether should quit)
     fn run_al(&mut self, alias: String) -> bool {
-        match self.config.get_shell_alias(&alias) {
+        match self.state.config.get_shell_alias(&alias) {
             Some(alias) => {
                 // Run the alias if possible, then quit if successful and desired
                 let res = utils::run_command(&alias.command);
@@ -316,15 +343,15 @@ impl Rem {
     fn run_al_ls(&self) {
         // Display all aliases
         println!("All shell aliases added:");
-        println!("{}", self.config.display_shell_aliases());
+        println!("{}", self.state.config.display_shell_aliases());
         println!("All rem aliases added:");
-        println!("{}", self.config.display_rem_aliases());
+        println!("{}", self.state.config.display_rem_aliases());
     }
 
     /// Run action: print
     fn run_print(&mut self) {
         // Print
-        for (i, line) in self.file_loaded.lines().enumerate() {
+        for (i, line) in self.state.file_loaded.lines().enumerate() {
             println!("   {:5} {}", i + 1, line);
         }
     }
@@ -334,7 +361,7 @@ impl Rem {
         // Search the file for lines including it
         let mut success: bool = false;
         println!("Searching...");
-        for (i, line) in self.file_loaded.lines().enumerate() {
+        for (i, line) in self.state.file_loaded.lines().enumerate() {
             // Match?
             if line.to_lowercase().find(&query).is_some() {
                 // Found
@@ -352,15 +379,15 @@ impl Rem {
         // The line number in the query
         match query.parse::<usize>() {
             Ok(linenum) => {
-                if linenum < 1 || linenum > self.file_loaded.lines().count() {
-                    println!("Enter a line number from 1 to {}", self.file_loaded.lines().count());
+                if linenum < 1 || linenum > self.state.file_loaded.lines().count() {
+                    println!("Enter a line number from 1 to {}", self.state.file_loaded.lines().count());
                     return;
                 }
                 // Print the line
-                println!("   {:5} {}", linenum, self.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
+                println!("   {:5} {}", linenum, self.state.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
             },
             _ => {
-                println!("Enter a line number from 1 to {}", self.file_loaded.lines().count());
+                println!("Enter a line number from 1 to {}", self.state.file_loaded.lines().count());
                 return;
             }
         }
@@ -369,7 +396,7 @@ impl Rem {
     /// Run action: todo add
     fn run_tda(&mut self, s: String) {
         // Append to the end of todos
-        if utils::append_to_file(&self.config.get_todo_path(), &format!("- {}", s)) {
+        if utils::append_to_file(&self.state.config.get_todo_path(), &format!("- {}", s)) {
             println!("Todo added successfully");
         } else {
             println!("Todo could not be added");
@@ -379,13 +406,13 @@ impl Rem {
     /// Run action: todo top (up until the given number of headers, default 1)
     fn run_tdt(&mut self, count: u32) {
         // Get the end of todos
-        match utils::read_file(&self.config.get_todo_path()) {
+        match utils::read_file(&self.state.config.get_todo_path()) {
             Some(contents) => {
                 // Print the end of the file up until the first hash symbol
                 let mut res = String::new();
                 let lines = contents.lines().collect::<Vec<&str>>();
                 let mut headers_seen = 0;
-                self.todos_ids.clear();
+                self.state.todos_ids.clear();
                 let mut currid = "a".to_string();
                 for i in (0..lines.len()).rev() {
                     let mut final_line = false;
@@ -396,7 +423,7 @@ impl Rem {
                         }
                     }
                     // Track this line's ID
-                    self.todos_ids.insert(currid.clone(), i + 1);
+                    self.state.todos_ids.insert(currid.clone(), i + 1);
                     // Line goes above res (because iterating in reverse)
                     res = format!("{:3}{:5} {}\n{}", currid, i + 1, lines[i], res);
                     if final_line {
@@ -414,7 +441,7 @@ impl Rem {
 
     /// Clear a todo based on its ID
     fn run_tdc(&self, id: String) {
-        let linenum: usize = match self.todos_ids.get(&id) {
+        let linenum: usize = match self.state.todos_ids.get(&id) {
             Some(l) => {
                 *l
             },
@@ -424,7 +451,7 @@ impl Rem {
             }
         };
         // Clear the todo
-        match utils::read_file(&self.config.get_todo_path()) {
+        match utils::read_file(&self.state.config.get_todo_path()) {
             Some(contents) => {
                 let mut lines = contents.lines().collect::<Vec<&str>>();
                 // Check bounds
@@ -443,7 +470,7 @@ impl Rem {
                     newcontents.push_str(&format!("{}\n", line));
                 }
                 // Overwrite the file with the new contents
-                utils::write_to_file(&self.config.get_todo_path(), &newcontents);
+                utils::write_to_file(&self.state.config.get_todo_path(), &newcontents);
             },
             _ => {
                 println!("Todo file could not be accessed");
@@ -454,7 +481,7 @@ impl Rem {
 
     /// Run action: todo edit
     fn run_tde(&self, s: String) {
-        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &format!("- {}", s), false) {
+        if utils::edit_last_line_of_file(&self.state.config.get_todo_path(), &format!("- {}", s), false) {
             println!("- {}", s);
         } else {
             println!("Topmost todo could not be edited");
@@ -472,7 +499,7 @@ impl Rem {
                 format!(" {}", s)
             }
         };
-        if utils::edit_last_line_of_file(&self.config.get_todo_path(), &formatted_to_append, true) {
+        if utils::edit_last_line_of_file(&self.state.config.get_todo_path(), &formatted_to_append, true) {
             println!("Appended to the topmost todo");
         } else {
             println!("Topmost todo could not be edited");
@@ -482,7 +509,7 @@ impl Rem {
     /// Run action: todo new day
     fn run_tdn(&mut self) {
         // Append the day to the end of todos
-        if utils::append_to_file(&self.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
+        if utils::append_to_file(&self.state.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
             println!("New day added successfully");
         } else {
             println!("Todo could not be added");
