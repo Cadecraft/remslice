@@ -1,4 +1,10 @@
 use crate::remstate;
+use crate::remdata;
+use crate::utils;
+use crate::config::Config;
+use crate::remfetch;
+use crate::command;
+use crate::feature;
 use std::sync::LazyLock;
 
 pub enum CommandResult {
@@ -6,85 +12,176 @@ pub enum CommandResult {
     EndProgram
 }
 
-pub struct Command {
-    name: String,
-    min_args: i32,
+pub type CommandRunFn = fn(args: &Vec<String>, state: &mut remstate::RemState) -> CommandResult;
+
+enum ArgsLim {
+    /// There are this many arguments total, and the last of them can be any string with spaces
+    // i.e. if we have 3 args and input is "A B C D   E F" -> ["A", "B", "C D   E F"]
+    EndlessLastArg(i32),
+    // The number of arguments must be precisely this value
+    Fixed(i32),
+    // The number of arguments can fall between the minimum and maximum
+    Range(i32,i32)
+}
+
+struct Command {
+    names: Vec<String>,
     /// The maximum number of arguments. If None, the min_args-th argument and beyond is one infinite string
-    max_args: Option<i32>,
-    pub run: fn(args: &Vec<String>, state: &mut remstate::RemState) -> CommandResult
+    args_lim: ArgsLim,
+    pub run: CommandRunFn
 }
 
 impl Command {
-    pub fn matches(&self, name: &str, num_args: i32) -> bool {
-        return name == self.name
-            && num_args >= self.min_args
-            && (self.max_args.is_none() || num_args <= self.max_args.unwrap())
+    pub fn new(names: Vec<String>, args_lim: ArgsLim, run: CommandRunFn) -> Command {
+        Command {
+            names,
+            args_lim,
+            run
+        }
     }
 
-    // Parse the input properly: return [Arg1, Arg2, "Infinite argument as one string"]
-    pub fn parse_input(&self, full_input: &str) -> Vec<String> {
-        let mut args_completed: i32 = -1;
-        let mut curr_str: String = String::new();
-        let mut res: Vec<String> = Vec::new();
-        for c in full_input.chars() {
-            let at_infinite_arg = args_completed >= self.min_args - 1;
-            if !at_infinite_arg && c == ' ' {
-                // Treat as a delimiting space before a new argument
-                if args_completed >= 0 {
-                    res.push(curr_str.clone());
-                }
-                curr_str.clear();
-                args_completed += 1;
-            } else {
-                // Treat as a verbatim input character
-                if at_infinite_arg {
-                    curr_str.push(c);
-                } else {
-                    let c_lower = c.to_lowercase().collect::<String>();
-                    curr_str.push_str(&c_lower);
-                }
+    pub fn matches(&self, name: &str, num_args: i32) -> bool {
+        self.names.iter().any(|s| s == name) && match self.args_lim {
+            ArgsLim::EndlessLastArg(needed_args) => {
+                num_args >= needed_args
+            },
+            ArgsLim::Fixed(needed_args) => {
+                num_args == needed_args
+            }
+            ArgsLim::Range(min_args, max_args) => {
+                num_args >= min_args && num_args <= max_args
             }
         }
-        if args_completed >= 0 {
-            res.push(curr_str);
-        }
-        for s in &res {
-            s.trim();
-        }
-        return res;
     }
+
+    /// Parse the input properly: return [Arg1, Arg2, "Endless argument as one string"]
+    /// This assumes that the command matches
+    pub fn parse_input(&self, full_input: &str) -> Vec<String> {
+        match self.args_lim {
+            ArgsLim::EndlessLastArg(needed_args) => {
+                // Since spaces may be included in the final endless argument, more complicated
+                full_input.splitn(needed_args as usize, ' ').map(|s| s.to_string()).collect()
+            },
+            _ => {
+                // Since we assume every space separates an argument, we can simply split
+                full_input.split(' ').map(|s| s.to_string()).collect()
+            }
+        }
+    }
+}
+
+macro_rules! string_vec {
+    ($($x:expr),*) => (vec![$($x.to_string()),*]);
 }
 
 // Store these commands lazily so they are only accessed on the first call
 static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
-    Command {
-        name: String::from("ping"),
-        min_args: 0,
-        max_args: Some(0),
-        run: |args, state| {
-            // Do stuff
-            state.ping_count += 1;
-            println!("pong (x{})", state.ping_count);
-            println!("DBG: you entered {}", args.concat());
+    Command::new(
+        string_vec!["score"], ArgsLim::Fixed(0),
+        |_args, state| {
+            feature::run_score(state);
             CommandResult::Nominal
         }
-    },
-    Command {
-        name: String::from("q"),
-        min_args: 0,
-        max_args: Some(0),
-        run: |_args, _state| {
-            // Do stuff
-            println!("DBG: QUITTING");
+    ),
+    Command::new(
+        string_vec!["version", "ver"], ArgsLim::Fixed(0),
+        |_args, state| {
+            println!("REMSLICE ({})", state.rem_data.to_string());
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["remfetch"], ArgsLim::Fixed(0),
+        |_args, state| {
+            println!("{}", remfetch::remfetch(&state.rem_data));
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["bye"], ArgsLim::Fixed(0),
+        |_args, _state| {
+            println!("bye!");
+            utils::await_enter();
             CommandResult::EndProgram
         }
-    },
+    ),
+    Command::new(
+        string_vec!["ping"], ArgsLim::Fixed(0),
+        |_args, state| {
+            state.ping_count += 1;
+            println!("pong (x{})", state.ping_count);
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["help"], ArgsLim::Fixed(0),
+        |_args, _state| {
+            println!("A detailed list of all commands can be found in `README.md`;");
+            println!("please check it out for the features and cool stuff!");
+            println!("- `exit`/`quit`/`q` - exit immediately");
+            println!("- `version`/`ver` - display simple version information");
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["wipe"], ArgsLim::Fixed(0),
+        |_args, _state| {
+            // Print enough times that the screen gets filled
+            for _i in 0..100 {
+                println!();
+            }
+            println!("The screen is clear!");
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["pwd"], ArgsLim::Fixed(0),
+        |_args, _state| {
+            println!("{}", utils::get_current_working_dir());
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["tip", "b"], ArgsLim::EndlessLastArg(2),
+        |args, state| {
+            // Tip and grep
+            feature::run_tip(state, &args[0], Some(&args[1]));
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["tip", "b"], ArgsLim::EndlessLastArg(1),
+        |args, state| {
+            // Tip only
+            feature::run_tip(state, &args[0], None);
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["tip-ls"], ArgsLim::Fixed(0),
+        |_args, state| {
+            println!("All tips added:");
+            println!("{}", state.config.display_tips());
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["grep"], ArgsLim::EndlessLastArg(1),
+        |args, state| {
+            feature::run_grep(state, &args[0]);
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        string_vec!["q", "exit", "quit"], ArgsLim::Fixed(0),
+        |_args, _state| {
+            CommandResult::EndProgram
+        }
+    ),
     Command {
-        name: String::from("tda"),
-        min_args: 1,
-        max_args: None,
+        names: vec![String::from("tda")],
+        args_lim: ArgsLim::EndlessLastArg(1),
         run: |args, _state| {
-            // Do stuff
             println!("DBG: you entered: {}", args[0]);
             CommandResult::Nominal
         }

@@ -27,43 +27,30 @@ impl Rem {
     }
 
     /// Respond to a raw user-inputted string and return whether the program should quit
-    pub fn respond_to_input(&mut self, input: String, recursion_level: i32) -> bool {
+    pub fn respond_to_input(&mut self, input: String, recursion_level: i32) -> Option<command::CommandResult> {
         // Ensure we aren't in an infinite loop
         const MAX_RECURSION_LEVEL: i32 = 100;
         if recursion_level > MAX_RECURSION_LEVEL {
             println!("Infinitely recursive command encountered (recursed over {MAX_RECURSION_LEVEL} times)");
-            return false
+            return None
         }
         // TODO: refactor all into run_command
         let res = command::run_command(&input, &mut self.state);
-        match res {
-            Some(command_res) => {
-                match command_res {
-                    command::CommandResult::EndProgram => {
-                        true
-                    },
-                    command::CommandResult::Nominal => false
-                }
-            },
-            None => {
-                // TODO: refactor this?
-                let parsed: Vec<String> = Self::parse_input(&input);
-                let first_arg = Self::argument_at_index(&parsed, 0);
-                match self.state.config.get_rem_alias_value(first_arg) {
-                    Some(val) => {
-                        // Execute the current rem alias
-                        if self.run_rem_alias(&val, recursion_level + 1) {
-                            // Should quit
-                            true
-                        } else {
-                            false
-                        }
-                    }
-                    _ => {
-                        println!("?");
-                        false
-                    }
-                }
+        if res.is_some() {
+            return res;
+        }
+        // Couldn't run the command verbatim, so check rem aliases
+        // TODO: refactor this?
+        let parsed: Vec<String> = Self::parse_input(&input);
+        let first_arg = Self::argument_at_index(&parsed, 0);
+        match self.state.config.get_rem_alias_value(first_arg) {
+            Some(val) => {
+                // Execute the current rem alias
+                self.run_rem_alias(&val, recursion_level + 1)
+            }
+            _ => {
+                println!("?");
+                None
             }
         }
 
@@ -279,46 +266,6 @@ impl Rem {
             println!();
         }
         println!("The screen is clear!");
-    }
-
-    /// Run action: tip
-    fn run_tip(&mut self, key: String, grepval: Option<String>) {
-        // Search for the given file and display it, so a tip can be found
-        match self.state.config.get_tip_value(&key) {
-            Some(tip_value) => {
-                // Open and load the file, if possible
-                match utils::read_file(&tip_value) {
-                    Some(thecontents) => {
-                        // Load the file
-                        self.state.file_loaded = thecontents.clone();
-                        println!("The file at {} is loaded into the buffer.", tip_value);
-                        match grepval {
-                            // Automatically grep
-                            Some(query) => {
-                                self.run_grep(query);
-                            },
-                            _ => {
-                                println!("Consider using `grep` or `print`");
-                            }
-                        }
-                    },
-                    _ => {
-                        println!("The file pointed to doesn't exist");
-                    }
-                }
-            },
-            _ => {
-                // Failed
-                println!("The tip nickname doesn't exist");
-            }
-        }
-    }
-
-    /// Run action: tip list
-    fn run_tip_ls(&self) {
-        // Display all tips
-        println!("All tips added:");
-        println!("{}", self.state.config.display_tips());
     }
 
     /// Run action: alias (return whether should quit)
@@ -538,7 +485,7 @@ impl Rem {
     }
 
     /// Run a rem alias, returning whether to quit
-    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) -> bool {
+    fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) -> Option<command::CommandResult> {
         self.respond_to_input(alias.to_string(), recursion_level + 1)
     }
 }
