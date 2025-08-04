@@ -45,7 +45,6 @@ impl Rem {
         let first_arg = Self::argument_at_index(&parsed, 0);
         match self.state.config.get_rem_alias_value(first_arg) {
             Some(val) => {
-                // Execute the current rem alias
                 self.run_rem_alias(&val, recursion_level + 1)
             }
             _ => {
@@ -155,25 +154,12 @@ impl Rem {
             },
             "copy" | "y" => {
                 // Try to copy whatever is in the copy val
-                utils::copy_to_clipboard(&self.state.to_copy_val);
-                if self.state.to_copy_val.chars().count() > 6 {
-                    println!("Yanked string starting with '{}'", &self.state.to_copy_val[..4]);
-                } else {
-                    println!("Yanked string '{}'", self.state.to_copy_val);
-                }
             },
             "paste" | "p" => {
                 // Try to paste whatever is in the clipboard val
-                match utils::paste_from_clipboard() {
-                    Some(contents) => {
-                        println!("{}", contents);
-                    },
-                    _ => {
-                        println!("Couldn't paste the clipboard contents");
-                    }
-                }
             },
             "pasterun!" | "pr!" => {
+                // DEPRECATED
                 // Try to run whatever is in the clipboard
                 match utils::paste_from_clipboard() {
                     Some(contents) => {
@@ -268,41 +254,6 @@ impl Rem {
         println!("The screen is clear!");
     }
 
-    /// Run action: alias (return whether should quit)
-    fn run_al(&mut self, alias: String) -> bool {
-        match self.state.config.get_shell_alias(&alias) {
-            Some(alias) => {
-                // Run the alias if possible, then quit if successful and desired
-                let res = utils::run_command(&alias.command);
-                if res && alias.quit_after_running {
-                    return true;
-                }
-            },
-            _ => {
-                println!("The shell alias doesn't exist");
-            }
-        }
-        // TODO: better indicator of "quit" or "not quit" (use an enum?)
-        false
-    }
-
-    /// Run action: alias list
-    fn run_al_ls(&self) {
-        // Display all aliases
-        println!("All shell aliases added:");
-        println!("{}", self.state.config.display_shell_aliases());
-        println!("All rem aliases added:");
-        println!("{}", self.state.config.display_rem_aliases());
-    }
-
-    /// Run action: print
-    fn run_print(&mut self) {
-        // Print
-        for (i, line) in self.state.file_loaded.lines().enumerate() {
-            println!("   {:5} {}", i + 1, line);
-        }
-    }
-
     /// Run action: grep
     fn run_grep(&mut self, query: String) {
         // Search the file for lines including it
@@ -318,148 +269,6 @@ impl Rem {
         }
         if !success {
             println!("I found no results in the file.");
-        }
-    }
-
-    /// Run action: line
-    fn run_line(&mut self, query: String) {
-        // The line number in the query
-        match query.parse::<usize>() {
-            Ok(linenum) => {
-                if linenum < 1 || linenum > self.state.file_loaded.lines().count() {
-                    println!("Enter a line number from 1 to {}", self.state.file_loaded.lines().count());
-                    return;
-                }
-                // Print the line
-                println!("   {:5} {}", linenum, self.state.file_loaded.lines().collect::<Vec<&str>>()[linenum - 1]);
-            },
-            _ => {
-                println!("Enter a line number from 1 to {}", self.state.file_loaded.lines().count());
-                return;
-            }
-        }
-    }
-
-    /// Run action: todo add
-    fn run_tda(&mut self, s: String) {
-        // Append to the end of todos
-        if utils::append_to_file(&self.state.config.get_todo_path(), &format!("- {}", s)) {
-            println!("Todo added successfully");
-        } else {
-            println!("Todo could not be added");
-        }
-    }
-
-    /// Run action: todo top (up until the given number of headers, default 1)
-    fn run_tdt(&mut self, count: u32) {
-        // Get the end of todos
-        match utils::read_file(&self.state.config.get_todo_path()) {
-            Some(contents) => {
-                // Print the end of the file up until the first hash symbol
-                let mut res = String::new();
-                let lines = contents.lines().collect::<Vec<&str>>();
-                let mut headers_seen = 0;
-                self.state.todos_ids.clear();
-                let mut currid = "a".to_string();
-                for i in (0..lines.len()).rev() {
-                    let mut final_line = false;
-                    if lines[i].starts_with("##") {
-                        headers_seen += 1;
-                        if headers_seen >= count {
-                            final_line = true;
-                        }
-                    }
-                    // Track this line's ID
-                    self.state.todos_ids.insert(currid.clone(), i + 1);
-                    // Line goes above res (because iterating in reverse)
-                    res = format!("{:3}{:5} {}\n{}", currid, i + 1, lines[i], res);
-                    if final_line {
-                        break;
-                    }
-                    currid = utils::generate_next_id(currid.clone());
-                }
-                println!("{}", res);
-            },
-            _ => {
-                println!("Todo file could not be accessed");
-            }
-        }
-    }
-
-    /// Clear a todo based on its ID
-    fn run_tdc(&self, id: String) {
-        let linenum: usize = match self.state.todos_ids.get(&id) {
-            Some(l) => {
-                *l
-            },
-            _ => {
-                println!("ID does not exist");
-                return;
-            }
-        };
-        // Clear the todo
-        match utils::read_file(&self.state.config.get_todo_path()) {
-            Some(contents) => {
-                let mut lines = contents.lines().collect::<Vec<&str>>();
-                // Check bounds
-                if linenum < 1 || linenum > lines.len() {
-                    println!("Line number pointed to is out of bounds");
-                    return;
-                }
-                let target: String = lines[linenum - 1].to_string();
-                let res: String = utils::strikethrough_text(&target);
-                // Print successful result
-                println!("   {:5} {}", linenum, res);
-                // Update the contents lines
-                lines[linenum - 1] = &res;
-                let mut newcontents = String::new();
-                for line in lines {
-                    newcontents.push_str(&format!("{}\n", line));
-                }
-                // Overwrite the file with the new contents
-                utils::write_to_file(&self.state.config.get_todo_path(), &newcontents);
-            },
-            _ => {
-                println!("Todo file could not be accessed");
-                return;
-            }
-        }
-    }
-
-    /// Run action: todo edit
-    fn run_tde(&self, s: String) {
-        if utils::edit_last_line_of_file(&self.state.config.get_todo_path(), &format!("- {}", s), false) {
-            println!("- {}", s);
-        } else {
-            println!("Topmost todo could not be edited");
-        }
-    }
-
-    /// Run action: todo append edit
-    fn run_tdae(&self, s: String) {
-        let formatted_to_append: String = match s.chars().next().unwrap_or(' ') {
-            ',' | ';' | '-' | '.' => {
-                // Punctuation, so include it
-                s.clone()
-            },
-            _ => {
-                format!(" {}", s)
-            }
-        };
-        if utils::edit_last_line_of_file(&self.state.config.get_todo_path(), &formatted_to_append, true) {
-            println!("Appended to the topmost todo");
-        } else {
-            println!("Topmost todo could not be edited");
-        }
-    }
-
-    /// Run action: todo new day
-    fn run_tdn(&mut self) {
-        // Append the day to the end of todos
-        if utils::append_to_file(&self.state.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
-            println!("New day added successfully");
-        } else {
-            println!("Todo could not be added");
         }
     }
 

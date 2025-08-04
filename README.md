@@ -128,11 +128,10 @@ rem_alias h al ffc
 ## Misc. Commands
 - `bye` - exit with a farewell message
 - `ping` - pong!
-- `wipe` - wipe the screen
+- `wipe`/`clear` - wipe the screen
 - `time` - display the current time
 - `copy`/`y` - copy ("yank") the last copyable message sent to the system clipboard (generally used after `score` or `time`)
 - `paste`/`p` - display the contents of the system clipboard
-- `pasterun!`/`pr!` - run the contents of the system clipboard as a command input to rem (dangerous--`paste` first to see contents!)
 
 ## Procedure/Action Commands
 - `score` - generate a daily score based on input prompts defined in your config
@@ -144,6 +143,7 @@ rem_alias h al ffc
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 - `tdt` - "todo top": display the top (most recent) entries in the todo file (up until the most recent `##` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
+- `tdt {n}` - display even more of the top todo entries (up until the nth most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 - `tde` - "todo edit": edit the topmost todo entry by replacing it, used for making a correction
 - `tdae` - "todo append-edit": append text to the topmost todo entry, used for making a correction
