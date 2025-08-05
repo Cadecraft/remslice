@@ -66,7 +66,7 @@ pub fn run_tip(state: &mut remstate::RemState, key: &str, grepval: Option<&str>)
 }
 
 // Search the file for lines including the query
-pub fn run_grep(state: &mut remstate::RemState, query: &str) {
+pub fn run_grep(state: &remstate::RemState, query: &str) {
     let mut success: bool = false;
     println!("Searching...");
     for (i, line) in state.file_loaded.lines().enumerate() {
@@ -83,7 +83,7 @@ pub fn run_grep(state: &mut remstate::RemState, query: &str) {
 }
 
 /// Get the line of the given number
-pub fn run_line(state: &mut remstate::RemState, line_num: &str) {
+pub fn run_line(state: &remstate::RemState, line_num: &str) {
     match line_num.parse::<usize>() {
         Ok(linenum) => {
             if linenum < 1 || linenum > state.file_loaded.lines().count() {
@@ -99,7 +99,7 @@ pub fn run_line(state: &mut remstate::RemState, line_num: &str) {
     }
 }
 
-pub fn run_tda(state: &mut remstate::RemState, todo_string: &str) {
+pub fn run_tda(state: &remstate::RemState, todo_string: &str) {
     // Append to the end of todos
     if utils::append_to_file(&state.config.get_todo_path(), &format!("- {}", todo_string)) {
         println!("Todo added successfully");
@@ -151,7 +151,6 @@ pub fn run_tdt(state: &mut remstate::RemState, count: u32) {
     }
 }
 
-// TODO: remove unnecessary mut for state parameters above if possible
 /// Clear the todo of a certain ID
 pub fn run_tdc(state: &remstate::RemState, id: &str) {
     let linenum: usize = match state.todos_ids.get(id) {

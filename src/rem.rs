@@ -53,7 +53,7 @@ impl Rem {
         input.splitn(2, ' ').collect::<Vec<&str>>()[0]
     }
 
-    /// Run a rem alias, returning whether to quit
+    /// Run a rem alias recursively
     fn run_rem_alias(&mut self, alias: &str, recursion_level: i32) -> Option<command::CommandResult> {
         self.respond_to_input(alias.to_string(), recursion_level + 1)
     }
