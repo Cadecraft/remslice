@@ -6,6 +6,9 @@ mod utils;
 mod rem;
 mod config;
 mod remfetch;
+mod command;
+mod remstate;
+mod feature;
 
 /* TODO:
     feat: allow intaking a file as an argument, or taking flags?
@@ -21,15 +24,18 @@ mod remfetch;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.6.0", "2025/02/04", true);
+    let rem_data = remdata::RemData::new("0.6.1", "2025/08/03", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately
     loop {
         let user_input = utils::get_user_input_line();
-        let should_quit = rem.respond_to_input(user_input, 0);
-        if should_quit {
-            break;
+        let res = rem.respond_to_input(user_input, 0);
+        match res {
+            Some(command::CommandResult::EndProgram) => {
+                break;
+            },
+            _ => ()
         }
     }
     // End
