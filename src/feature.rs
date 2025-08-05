@@ -1,8 +1,5 @@
 use crate::remstate;
-use crate::remdata;
 use crate::utils;
-use crate::config::Config;
-use crate::remfetch;
 use crate::command;
 
 pub fn run_score(state: &mut remstate::RemState) {
@@ -205,14 +202,10 @@ pub fn run_tde(state: &remstate::RemState, new_todo: &str) {
 
 /// Append-edit the latest todo
 pub fn run_tdae(state: &remstate::RemState, new_todo: &str) {
+    // If the first char is punctuation, don't include a space between the original and appended contents
     let formatted_to_append: String = match new_todo.chars().next().unwrap_or(' ') {
-        ',' | ';' | '-' | '.' => {
-            // Punctuation, so don't include a space between the original and appended contents
-            new_todo.to_string()
-        },
-        _ => {
-            format!(" {}", new_todo)
-        }
+        ',' | ';' | '-' | '.' | ':' => new_todo.to_string(),
+        _ => format!(" {}", new_todo)
     };
     if utils::edit_last_line_of_file(&state.config.get_todo_path(), &formatted_to_append, true) {
         println!("Appended to the topmost todo");

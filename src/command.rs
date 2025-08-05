@@ -17,13 +17,13 @@ enum ArgsLim {
     EndlessLastArg(i32),
     /// The number of arguments must be precisely this value
     Fixed(i32),
+    /// There must be no arguments
     None
-    // Idea: `Range(i32, i32)`: the number of arguments could fall between the minimum and maximum
 }
 
 struct Command {
     names: Vec<String>,
-    /// The maximum number of arguments. If None, the min_args-th argument and beyond is one infinite string
+    /// The number and structure of arguments that the command expects
     args_lim: ArgsLim,
     pub run: CommandRunFn
 }
@@ -37,6 +37,7 @@ impl Command {
         }
     }
 
+    /// Whether a user's inputted command matches this command's structure
     pub fn matches(&self, name: &str, num_args: i32) -> bool {
         self.names.iter().any(|s| s == name) && match self.args_lim {
             ArgsLim::EndlessLastArg(needed_args) => {
@@ -53,7 +54,7 @@ impl Command {
 
     /// Parse the input properly
     // Ex. "mycommand A B Endless arg as str" -> ["A", "B", "Endless argument as one string"]
-    /// This assumes that the command matches (and thus will not check argument counts)
+    /// This assumes that the command already matches (and thus will not check argument counts)
     pub fn parse_input(&self, full_input: &str) -> Vec<String> {
         // TODO: impl ignoring spaces and keeping case within quotes, handling backslashes, etc.
         match self.args_lim {
@@ -225,14 +226,14 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         }
     ),
     Command::new(
-        string_vec!["tde"], ArgsLim::Fixed(1),
+        string_vec!["tde"], ArgsLim::EndlessLastArg(1),
         |args, state| {
             feature::run_tde(state, &args[0]);
             CommandResult::Nominal
         }
     ),
     Command::new(
-        string_vec!["tdae"], ArgsLim::Fixed(1),
+        string_vec!["tdae"], ArgsLim::EndlessLastArg(1),
         |args, state| {
             feature::run_tdae(state, &args[0]);
             CommandResult::Nominal
@@ -280,7 +281,7 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     ),
     Command::new(
         string_vec!["paste", "p"], ArgsLim::None,
-        |_args, state| {
+        |_args, _state| {
             match utils::paste_from_clipboard() {
                 Some(contents) => {
                     println!("{}", contents);
