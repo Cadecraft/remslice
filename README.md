@@ -56,6 +56,12 @@ tip anothertip C:/Other/Path/anotherthing.txt
 todo C:/MyFolder/todos_list.md
 ```
 
+- `ted_command_prefix` defines your preferred text editor used for editing the todo file (see the `ted` command)
+    - It is recommended to use a graphical editor if you frequently run remslice on your desktop, which is why the default command is `gvim +`
+```
+ted_command_prefix neovide
+```
+
 - `shell_alias` defines an alias to a shell command
     - Runs in `powershell` for Windows and `sh` elsewhere
     - Like with the file paths above, you *cannot* use spaces in your alias names.
@@ -146,6 +152,7 @@ rem_alias h al ffc
 - `tdt {n}` - display even more of the top todo entries (up until the nth most recent `##` header)
 - `tdc` - "todo clear/complete": toggle the strikethrough for a todo in the todo file by its lowercase alphabetical ID (see `tdt`)
 - `tde` - "todo edit": edit the topmost todo entry by replacing it, used for making a correction
+- `ted` - "todo editor": launch a text editor for doing more complex reorganization of your todos
 - `tdae` - "todo append-edit": append text to the topmost todo entry, used for making a correction
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
 - `al {shell alias}` - run the command defined by a certain shell alias in the config file

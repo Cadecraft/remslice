@@ -247,6 +247,12 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         }
     ),
     Command::new(
+        string_vec!["ted"], ArgsLim::None,
+        |_args, state| {
+            feature::run_ted(state)
+        }
+    ),
+    Command::new(
         string_vec!["al"], ArgsLim::Fixed(1),
         |args, state| {
             // Return the result from the alias, since aliases might be quitting

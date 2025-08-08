@@ -24,7 +24,7 @@ mod feature;
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.6.1", "2025/08/03", true);
+    let rem_data = remdata::RemData::new("0.6.2", "2025/08/08", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately
