@@ -113,7 +113,7 @@ pub fn run_tdt(state: &mut remstate::RemState, count: u32) {
     const TDT_MAX_ARG: u32 = 9;
     if count > TDT_MAX_ARG {
         println!("It is unreasonable to request this many ({}) todo headers.", count);
-        println!("Please manually open the todo file in a text editor.");
+        println!("Please simply open the todo file in a text editor (i.e. using the 'ted' command).");
         println!("To find its path, run 'remfetch' and visit the listed config file.");
         return;
     }
@@ -223,11 +223,24 @@ pub fn run_tdn(state: &remstate::RemState) {
     }
 }
 
+/// Open a third-party text editor with the todo file and close remslice
+pub fn run_ted(state: &remstate::RemState) -> command::CommandResult {
+    let editor_command_prefix = state.config.get_ted_command_prefix();
+    let full_command = format!("{} {}", editor_command_prefix, state.config.get_todo_path());
+    let command_successful = utils::run_shell_command(&full_command);
+    if command_successful {
+        command::CommandResult::EndProgram
+    } else {
+        println!("The todo editor command failed! Check ted_command_prefix in your .remrc file");
+        command::CommandResult::Nominal
+    }
+}
+
 /// Run a shell alias
 pub fn run_al(state: &remstate::RemState, alias: &str) -> command::CommandResult {
     match state.config.get_shell_alias(&alias) {
         Some(alias) => {
-            let command_successful = utils::run_command(&alias.command);
+            let command_successful = utils::run_shell_command(&alias.command);
             // Only quit if successful AND desired
             if command_successful && alias.quit_after_running {
                 command::CommandResult::EndProgram

@@ -194,8 +194,8 @@ pub fn get_os() -> String {
     OS.to_string()
 }
 
-/// Run a command, print an informational message, and return whether successful
-pub fn run_command(command: &str) -> bool {
+/// Run a command in the shell, print an informational message, and return whether successful
+pub fn run_shell_command(command: &str) -> bool {
     match OS {
         "windows" => {
             // Use powershell

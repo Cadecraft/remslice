@@ -23,7 +23,8 @@ pub struct Config {
     score_positive: Vec<String>,
     score_negative: Vec<String>,
     score_divby: f32,
-    score_formula_number: String
+    score_formula_number: String,
+    ted_command_prefix: String,
 }
 
 impl Config {
@@ -38,7 +39,8 @@ impl Config {
             score_positive: Vec::new(),
             score_negative: Vec::new(),
             score_divby: 5.0,
-            score_formula_number: "1".to_string()
+            score_formula_number: "1".to_string(),
+            ted_command_prefix: "gvim +".to_string(),
         };
         c.load();
         c
@@ -47,6 +49,10 @@ impl Config {
     /// Get the todo path
     pub fn get_todo_path(&self) -> String {
         self.todo_path.clone()
+    }
+
+    pub fn get_ted_command_prefix(&self) -> &str {
+        &self.ted_command_prefix
     }
 
     /// Load the config from the remrc
@@ -61,6 +67,7 @@ impl Config {
                         continue;
                     }
                     // Parse this line
+                    // TODO: refactor config much like the command refactor (in fact, maybe use the same struct?)
                     let parsed: Vec<&str> = line.trim().split(" ").collect::<Vec<&str>>();
                     match parsed[0].trim() {
                         "tip" if parsed.len() >= 3 => {
@@ -101,6 +108,11 @@ impl Config {
                             // Set the todo path
                             let userpath = utils::trailing_portion_of_input(line, 2);
                             self.todo_path = userpath;
+                        },
+                        "ted_command_prefix" if parsed.len() >= 2 => {
+                            // Set the todo editor command prefix
+                            let prefix = utils::trailing_portion_of_input(line, 2);
+                            self.ted_command_prefix = prefix;
                         },
                         "score_p" if parsed.len() >= 2 => {
                             // Add a positive score category
