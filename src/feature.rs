@@ -114,7 +114,7 @@ pub fn run_tdt(state: &mut remstate::RemState, count: u32) {
     if count > TDT_MAX_ARG {
         println!("It is unreasonable to request this many ({}) todo headers.", count);
         println!("Please simply open the todo file in a text editor (i.e. using the 'ted' command).");
-        println!("To find its path, run 'remfetch' and visit the listed config file.");
+        println!("You can configure the 'ted' command in your .remrc file.");
         return;
     }
     // Get the end of todos
