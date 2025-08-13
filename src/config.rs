@@ -16,7 +16,7 @@ pub struct ShellAlias {
 /// Stores a rem config based on the remrc file
 pub struct Config {
     remrc_path: String,
-    tips: Vec<Pair>,
+    pub tips: Vec<Pair>,
     shell_aliases: Vec<ShellAlias>,
     rem_aliases: Vec<Pair>,
     todo_path: String,
@@ -55,8 +55,26 @@ impl Config {
         &self.ted_command_prefix
     }
 
+    pub fn add_tip(&mut self, key: &str, value: &str) {
+        self.tips.push(Pair {
+            key: key.to_string(),
+            value: value.to_string()
+        });
+    }
+
+    pub fn add_shell_alias(&mut self, key: &str, command: &str, quit_after_running: bool) {
+        self.shell_aliases.push(ShellAlias {
+            key: key.to_string(),
+            command: command.to_string(),
+            quit_after_running
+        });
+    }
+
+    // TODO: deprecate this
     /// Load the config from the remrc
     pub fn load(&mut self) -> bool {
+        // TODO: DEPRECATE
+        return false;
         // Read the file
         match utils::read_file(&self.remrc_path) {
             Some(contents) => {

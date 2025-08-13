@@ -9,6 +9,7 @@ mod remfetch;
 mod command;
 mod remstate;
 mod feature;
+mod command_lists;
 
 /* TODO:
     feat: allow intaking a file as an argument, or taking flags?

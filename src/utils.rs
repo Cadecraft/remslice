@@ -285,6 +285,22 @@ pub fn trailing_portion_of_input(line: &str, n: i32) -> String {
     res
 }
 
+/// Return the number of space-separated arguments (not including the command name) and the command name
+pub fn process_input(full_input: &str) -> Option<(i32, String)> {
+    // TODO: impl ignoring spaces and keeping case within quotes, handling backslashes, etc.
+    let splitted: Vec<&str> = full_input.split(' ').collect::<Vec<&str>>();
+    match splitted.len() {
+        0 => return None,
+        _ => Some(((splitted.len() as i32) - 1, splitted[0].to_string()))
+    }
+}
+
+macro_rules! string_vec {
+    ($($x:expr),*) => (vec![$($x.to_string()),*]);
+}
+
+pub(crate) use string_vec;
+
 /// Strikethrough a line of text in markdown
 /// Either clear (strikethrough) or unclear (remove strikethrough), depending on whether already cleared
 pub fn strikethrough_text(target: &str) -> String {

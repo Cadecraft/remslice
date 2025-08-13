@@ -1,8 +1,7 @@
 use crate::remdata;
-use crate::config::Config;
 use crate::command;
 use crate::remstate;
-use std::collections::hash_map::HashMap;
+use crate::command_lists;
 
 /// Stores state and runs commands from user input
 pub struct Rem {
@@ -12,14 +11,7 @@ pub struct Rem {
 impl Rem {
     pub fn new(rem_data: remdata::RemData) -> Rem {
         Rem {
-            state: remstate::RemState {
-                rem_data,
-                ping_count: 0,
-                to_copy_val: "[empty]".to_string(),
-                file_loaded: String::new(),
-                todos_ids: HashMap::new(),
-                config: Config::new()
-            }
+            state: remstate::RemState::new(rem_data)
         }
     }
 
@@ -31,7 +23,7 @@ impl Rem {
             println!("Infinitely recursive command encountered (recursed over {MAX_RECURSION_LEVEL} times)");
             return None
         }
-        let res = command::run_command(&input, &mut self.state);
+        let res = command::run_command(&input, &mut self.state, command_lists::get_rem_commands());
         if res.is_some() {
             return res;
         }

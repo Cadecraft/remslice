@@ -1,17 +1,22 @@
-use crate::remstate;
+use crate::command::{ Command, ArgsLim, CommandResult };
 use crate::utils;
 use crate::remfetch;
 use crate::feature;
 use std::sync::LazyLock;
 
-pub enum CommandResult {
-    Nominal,
-    EndProgram
+/*/// The result of a config command: whether it was successful or failed
+pub enum ConfigCommandResult {
+    Error(String),
+    Nominal
 }
 
-pub type CommandRunFn = fn(args: &Vec<String>, state: &mut remstate::RemState) -> CommandResult;
+// TODO: could a Command actually be used here, and just have the actual
+// ^ remState, including the config, passed to it??
+// That would change where Commands are loaded but could actually be way more idiomatic
+pub type ConfigCommandRunFn = fn(args: &Vec<String>, config: &mut config::Config) -> ConfigCommandResult;
 
-pub enum ArgsLim {
+// TODO: refactor to share ArgsLim (ideally in a better place than utils.rs)
+enum ArgsLim {
     /// There are this many arguments total, and the last of them can be any string with spaces
     /// i.e. if we have 3 args and input is "A B C D   E" -> ["A", "B", "C D   E"]
     EndlessLastArg(i32),
@@ -21,16 +26,16 @@ pub enum ArgsLim {
     None
 }
 
-pub struct Command {
+struct ConfigCommand {
     names: Vec<String>,
     /// The number and structure of arguments that the command expects
     args_lim: ArgsLim,
-    pub run: CommandRunFn
+    pub run: ConfigCommandRunFn
 }
 
-impl Command {
-    pub fn new(names: Vec<String>, args_lim: ArgsLim, run: CommandRunFn) -> Command {
-        Command {
+impl ConfigCommand {
+    pub fn new(names: Vec<String>, args_lim: ArgsLim, run: ConfigCommandRunFn) -> ConfigCommand {
+        ConfigCommand {
             names,
             args_lim,
             run
@@ -69,29 +74,35 @@ impl Command {
             }
         }
     }
-}
+}*/
 
-/// Find the matching command based on the user's parsed input and run it
-pub fn run_command(
-    full_input: &str,
-    state: &mut remstate::RemState,
-    command_list: &Vec<Command>
-) -> Option<CommandResult> {
-    let processed = utils::process_input(&full_input);
-    if processed.is_none() {
-        return None;
-    }
-    let (num_args, command_name) = processed.unwrap();
-    let found = command_list.iter().find(|&x| x.matches(&command_name, num_args));
-    match found {
-        Some(command) => {
-            // Run the command, parsing the input properly for the number of arguments
-            let parsed = command.parse_input(full_input);
-            let res = (command.run)(&parsed, state);
-            Some(res)
-        },
-        _ => {
-            None
+// Store these config commands lazily so they are only accessed on the first call
+static CONFIG_COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
+    Command::new(
+        utils::string_vec!["tip"], ArgsLim::EndlessLastArg(2),
+        |args, state| {
+            // Add a tip
+            let userpath = &args[1];
+            state.config.add_tip(args[0].trim(), userpath);
+            CommandResult::Nominal
         }
-    }
-}
+    ),
+    Command::new(
+        utils::string_vec!["shell_alias"], ArgsLim::EndlessLastArg(2),
+        |args, state| {
+            // Add a shell alias
+            let usercommand = &args[1];
+            state.config.add_shell_alias(args[0].trim(), usercommand, false);
+            CommandResult::Nominal
+        }
+    ),
+    Command::new(
+        utils::string_vec!["shell_alias_quitting"], ArgsLim::EndlessLastArg(2),
+        |args, state| {
+            // Add a shell alias that quits after running
+            let usercommand = &args[1];
+            state.config.add_shell_alias(args[0].trim(), usercommand, true);
+            CommandResult::Nominal
+        }
+    ),
+]});
