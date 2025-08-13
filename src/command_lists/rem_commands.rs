@@ -75,16 +75,25 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         utils::string_vec!["tip", "b"], ArgsLim::EndlessLastArg(2),
         |args, state| {
             // Tip and grep
-            feature::run_tip(state, &args[0], Some(&args[1]));
-            CommandResult::Nominal
+            let res = feature::run_tip(state, &args[0]);
+            match res {
+                CommandResult::Error(_) => {
+                    res
+                },
+                _ => {
+                    feature::run_grep(state, &args[1]);
+                    CommandResult::Nominal
+                }
+            }
         }
     ),
     Command::new(
         utils::string_vec!["tip", "b"], ArgsLim::EndlessLastArg(1),
         |args, state| {
             // Tip only
-            feature::run_tip(state, &args[0], None);
-            CommandResult::Nominal
+            let res = feature::run_tip(state, &args[0]);
+            println!("Consider using `grep` or `print`");
+            res
         }
     ),
     Command::new(

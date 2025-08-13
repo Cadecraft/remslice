@@ -1,6 +1,6 @@
 use crate::remstate;
 use crate::utils;
-use crate::command;
+use crate::command::CommandResult;
 
 pub fn run_score(state: &mut remstate::RemState) {
     // Get based on config
@@ -33,7 +33,7 @@ pub fn run_score(state: &mut remstate::RemState) {
     println!("To copy the report, enter `copy`");
 }
 
-pub fn run_tip(state: &mut remstate::RemState, key: &str, grepval: Option<&str>) {
+pub fn run_tip(state: &mut remstate::RemState, key: &str) -> CommandResult {
     // Search for the given file and display it, so a tip can be found
     match state.config.get_tip_value(key) {
         Some(tip_value) => {
@@ -43,24 +43,15 @@ pub fn run_tip(state: &mut remstate::RemState, key: &str, grepval: Option<&str>)
                     // Load the file
                     state.file_loaded = thecontents.clone();
                     println!("The file at {} is loaded into the buffer.", tip_value);
-                    match grepval {
-                        // Automatically grep
-                        Some(query) => {
-                            run_grep(state, query);
-                        },
-                        _ => {
-                            println!("Consider using `grep` or `print`");
-                        }
-                    }
+                    CommandResult::Nominal
                 },
                 _ => {
-                    println!("The file pointed to doesn't exist");
+                    CommandResult::Error("The file pointed to doesn't exist".to_string())
                 }
             }
         },
         _ => {
-            // Failed
-            println!("The tip nickname doesn't exist");
+            CommandResult::Error("The tip nickname doesn't exist".to_string())
         }
     }
 }
@@ -224,33 +215,33 @@ pub fn run_tdn(state: &remstate::RemState) {
 }
 
 /// Open a third-party text editor with the todo file and close remslice
-pub fn run_ted(state: &remstate::RemState) -> command::CommandResult {
+pub fn run_ted(state: &remstate::RemState) -> CommandResult {
     let editor_command_prefix = &state.config.ted_command_prefix;
     let full_command = format!("{} {}", editor_command_prefix, state.config.todo_path);
     let command_successful = utils::run_shell_command(&full_command);
     if command_successful {
-        command::CommandResult::EndProgram
+        CommandResult::EndProgram
     } else {
         println!("The todo editor command failed! Check ted_command_prefix in your .remrc file");
-        command::CommandResult::Nominal
+        CommandResult::Nominal
     }
 }
 
 /// Run a shell alias
-pub fn run_al(state: &remstate::RemState, alias: &str) -> command::CommandResult {
+pub fn run_al(state: &remstate::RemState, alias: &str) -> CommandResult {
     match state.config.get_shell_alias(&alias) {
         Some(alias) => {
             let command_successful = utils::run_shell_command(&alias.command);
             // Only quit if successful AND desired
             if command_successful && alias.quit_after_running {
-                command::CommandResult::EndProgram
+                CommandResult::EndProgram
             } else {
-                command::CommandResult::Nominal
+                CommandResult::Nominal
             }
         },
         _ => {
             println!("The shell alias doesn't exist");
-            command::CommandResult::Nominal
+            CommandResult::Nominal
         }
     }
 }
