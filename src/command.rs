@@ -1,8 +1,5 @@
 use crate::remstate;
 use crate::utils;
-use crate::remfetch;
-use crate::feature;
-use std::sync::LazyLock;
 
 pub enum CommandResult {
     Nominal,

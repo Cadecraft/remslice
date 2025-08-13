@@ -2,6 +2,7 @@ use crate::remdata;
 use crate::config::Config;
 use crate::command;
 use crate::command_lists;
+use crate::utils;
 use std::collections::hash_map::HashMap;
 
 pub struct RemState {
@@ -25,10 +26,22 @@ impl RemState {
             todos_ids: HashMap::new(),
             config: Config::new()
         };
-        // TODO: get the input file
-        // TODO: run for each line of input
-        // TODO: handle/report any errors or problems loading the input
-        command::run_command("tip test C:/Cade/Temp/testrem.txt", &mut res, command_lists::get_config_commands());
+        match utils::read_file(&utils::get_config_path()) {
+            Some(contents) => {
+                for line in contents.lines() {
+                    if line.trim().is_empty() || line.trim().chars().nth(0).unwrap() == '#' {
+                        // Empty line or comment
+                        continue;
+                    }
+                    let command_res = command::run_command(&line, &mut res, command_lists::get_config_commands());
+                    // TODO: handle errors here?
+                }
+            },
+            _ => {
+                // Failed to load file: log somewhere?
+                // TODO: log somewhere? Handle/report any errors?
+            }
+        }
         res
     }
 }

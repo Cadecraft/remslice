@@ -4,8 +4,8 @@ use crate::command;
 
 pub fn run_score(state: &mut remstate::RemState) {
     // Get based on config
-    let divide_by: f32 = state.config.score_divby();
-    let formula_number: &str = &state.config.score_formula_number();
+    let divide_by: f32 = state.config.score_divby;
+    let formula_number: &str = &state.config.score_formula_number;
     // Obtain relevant information
     println!("Today's questions:");
     let mut daily_score_disp = format!("Daily Score (Formula {}) = (", formula_number);
@@ -101,7 +101,7 @@ pub fn run_line(state: &remstate::RemState, line_num: &str) {
 
 pub fn run_tda(state: &remstate::RemState, todo_string: &str) {
     // Append to the end of todos
-    if utils::append_to_file(&state.config.get_todo_path(), &format!("- {}", todo_string)) {
+    if utils::append_to_file(&state.config.todo_path, &format!("- {}", todo_string)) {
         println!("Todo added successfully");
     } else {
         println!("Todo could not be added");
@@ -118,7 +118,7 @@ pub fn run_tdt(state: &mut remstate::RemState, count: u32) {
         return;
     }
     // Get the end of todos
-    match utils::read_file(&state.config.get_todo_path()) {
+    match utils::read_file(&state.config.todo_path) {
         Some(contents) => {
             // Print the end of the file up until the first hash symbol
             let mut res = String::new();
@@ -162,7 +162,7 @@ pub fn run_tdc(state: &remstate::RemState, id: &str) {
             return;
         }
     };
-    match utils::read_file(&state.config.get_todo_path()) {
+    match utils::read_file(&state.config.todo_path) {
         Some(contents) => {
             let mut lines = contents.lines().collect::<Vec<&str>>();
             // Check bounds
@@ -181,7 +181,7 @@ pub fn run_tdc(state: &remstate::RemState, id: &str) {
                 newcontents.push_str(&format!("{}\n", line));
             }
             // Overwrite the file with the new contents
-            utils::write_to_file(&state.config.get_todo_path(), &newcontents);
+            utils::write_to_file(&state.config.todo_path, &newcontents);
         },
         _ => {
             println!("Todo file could not be accessed");
@@ -192,7 +192,7 @@ pub fn run_tdc(state: &remstate::RemState, id: &str) {
 
 /// Edit the latest todo
 pub fn run_tde(state: &remstate::RemState, new_todo: &str) {
-    if utils::edit_last_line_of_file(&state.config.get_todo_path(), &format!("- {}", new_todo), false) {
+    if utils::edit_last_line_of_file(&state.config.todo_path, &format!("- {}", new_todo), false) {
         println!("- {}", new_todo);
     } else {
         println!("Topmost todo could not be edited");
@@ -206,7 +206,7 @@ pub fn run_tdae(state: &remstate::RemState, new_todo: &str) {
         ',' | ';' | '-' | '.' | ':' => new_todo.to_string(),
         _ => format!(" {}", new_todo)
     };
-    if utils::edit_last_line_of_file(&state.config.get_todo_path(), &formatted_to_append, true) {
+    if utils::edit_last_line_of_file(&state.config.todo_path, &formatted_to_append, true) {
         println!("Appended to the topmost todo");
     } else {
         println!("Topmost todo could not be edited");
@@ -216,7 +216,7 @@ pub fn run_tdae(state: &remstate::RemState, new_todo: &str) {
 /// Start a new day as a header in the todo list
 pub fn run_tdn(state: &remstate::RemState) {
     // Append the day to the end of todos
-    if utils::append_to_file(&state.config.get_todo_path(), &format!("## {}", utils::get_date_only_formatted())) {
+    if utils::append_to_file(&state.config.todo_path, &format!("## {}", utils::get_date_only_formatted())) {
         println!("New day added successfully");
     } else {
         println!("Todo could not be added");
@@ -225,8 +225,8 @@ pub fn run_tdn(state: &remstate::RemState) {
 
 /// Open a third-party text editor with the todo file and close remslice
 pub fn run_ted(state: &remstate::RemState) -> command::CommandResult {
-    let editor_command_prefix = state.config.get_ted_command_prefix();
-    let full_command = format!("{} {}", editor_command_prefix, state.config.get_todo_path());
+    let editor_command_prefix = &state.config.ted_command_prefix;
+    let full_command = format!("{} {}", editor_command_prefix, state.config.todo_path);
     let command_successful = utils::run_shell_command(&full_command);
     if command_successful {
         command::CommandResult::EndProgram
