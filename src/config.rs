@@ -1,5 +1,3 @@
-use crate::utils;
-
 /// Stores a tip key/value pair
 struct Pair {
     key: String,

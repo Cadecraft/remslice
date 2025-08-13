@@ -268,23 +268,6 @@ pub fn generate_next_id(currid: String) -> String {
     res
 }
 
-/// Get the trailing nth section of a line of input
-/// (everything after the (n - 1)th word of the argument)
-/// Ex. if n = 2, get everything after the first word
-pub fn trailing_portion_of_input(line: &str, n: i32) -> String {
-    // After the (n - 1)th word, get everything else
-    let mut space_gaps: i32 = 0;
-    let mut res = String::new();
-    for c in line.trim().chars() {
-        if space_gaps >= (n - 1) {
-            res.push(c);
-        } else if c == ' ' {
-            space_gaps += 1;
-        }
-    }
-    res
-}
-
 /// Return the number of space-separated arguments (not including the command name) and the command name
 pub fn process_input(full_input: &str) -> Option<(i32, String)> {
     // TODO: impl ignoring spaces and keeping case within quotes, handling backslashes, etc.

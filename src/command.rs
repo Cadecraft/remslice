@@ -3,6 +3,7 @@ use crate::utils;
 
 pub enum CommandResult {
     Nominal,
+    Error(String),
     EndProgram
 }
 

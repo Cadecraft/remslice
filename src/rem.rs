@@ -24,19 +24,27 @@ impl Rem {
             return None
         }
         let res = command::run_command(&input, &mut self.state, command_lists::get_rem_commands());
-        if res.is_some() {
-            return res;
-        }
-        // Couldn't run the command verbatim, so check rem aliases
-        // TODO: refactor this?
-        let first_arg = Self::first_arg(&input);
-        match self.state.config.get_rem_alias_value(first_arg) {
-            Some(val) => {
-                self.run_rem_alias(&val, recursion_level + 1)
-            }
-            _ => {
-                println!("?");
-                None
+        match res {
+            Some(command::CommandResult::Error(descr)) => {
+                println!("Error: {}", descr);
+                Some(command::CommandResult::Error(descr.clone()))
+            },
+            Some(_) => {
+                res
+            },
+            None => {
+                // Couldn't run the command verbatim, so check rem aliases
+                // TODO: refactor this?
+                let first_arg = Self::first_arg(&input);
+                match self.state.config.get_rem_alias_value(first_arg) {
+                    Some(val) => {
+                        self.run_rem_alias(&val, recursion_level + 1)
+                    }
+                    _ => {
+                        println!("?");
+                        None
+                    }
+                }
             }
         }
     }

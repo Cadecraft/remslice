@@ -75,13 +75,12 @@ pub static CONFIG_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
             match userdivby.parse::<f32>() {
                 Ok(res) => {
                     state.config.score_divby = res;
+                    CommandResult::Nominal
                 },
                 _ => {
-                    // Error
-                    // TODO: return an actual error command result
+                    CommandResult::Error("Could not parse score_divby".to_string())
                 }
-            };
-            CommandResult::Nominal
+            }
         }
     ),
     Command::new(
