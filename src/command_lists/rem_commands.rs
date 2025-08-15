@@ -92,8 +92,15 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         |args, state| {
             // Tip only
             let res = feature::run_tip(state, &args[0]);
-            println!("Consider using `grep` or `print`");
-            res
+            match res {
+                CommandResult::Error(_) => {
+                    res
+                },
+                _ => {
+                    println!("Consider using `grep` or `print`");
+                    res
+                }
+            }
         }
     ),
     Command::new(
@@ -114,15 +121,13 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     Command::new(
         utils::string_vec!["line"], ArgsLim::Fixed(1),
         |args, state| {
-            feature::run_line(state, &args[0]);
-            CommandResult::Nominal
+            feature::run_line(state, &args[0])
         }
     ),
     Command::new(
         utils::string_vec!["tda"], ArgsLim::EndlessLastArg(1),
         |args, state| {
-            feature::run_tda(state, &args[0]);
-            CommandResult::Nominal
+            feature::run_tda(state, &args[0])
         }
     ),
     Command::new(
@@ -139,49 +144,43 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
             // (i.e. every Command, in run, would type-check its argument)
             match args[0].parse::<u32>() {
                 Ok(count) => {
-                    feature::run_tdt(state, count);
+                    feature::run_tdt(state, count)
                 },
                 _ => {
-                    println!("Please enter a non-negative number");
+                    CommandResult::Error("Please enter a non-negative integer".to_string())
                 }
-            };
-            CommandResult::Nominal
+            }
         }
     ),
     Command::new(
         utils::string_vec!["tdt2"], ArgsLim::None,
         |_args, state| {
             // A specific command name for backwards compatability only
-            feature::run_tdt(state, 2);
-            CommandResult::Nominal
+            feature::run_tdt(state, 2)
         }
     ),
     Command::new(
         utils::string_vec!["tdc"], ArgsLim::Fixed(1),
         |args, state| {
-            feature::run_tdc(state, &args[0]);
-            CommandResult::Nominal
+            feature::run_tdc(state, &args[0])
         }
     ),
     Command::new(
         utils::string_vec!["tde"], ArgsLim::EndlessLastArg(1),
         |args, state| {
-            feature::run_tde(state, &args[0]);
-            CommandResult::Nominal
+            feature::run_tde(state, &args[0])
         }
     ),
     Command::new(
         utils::string_vec!["tdae"], ArgsLim::EndlessLastArg(1),
         |args, state| {
-            feature::run_tdae(state, &args[0]);
-            CommandResult::Nominal
+            feature::run_tdae(state, &args[0])
         }
     ),
     Command::new(
         utils::string_vec!["tdn"], ArgsLim::None,
         |_args, state| {
-            feature::run_tdn(state);
-            CommandResult::Nominal
+            feature::run_tdn(state)
         }
     ),
     Command::new(
@@ -200,15 +199,13 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     Command::new(
         utils::string_vec!["al-ls"], ArgsLim::None,
         |_args, state| {
-            feature::run_al_ls(state);
-            CommandResult::Nominal
+            feature::run_al_ls(state)
         }
     ),
     Command::new(
         utils::string_vec!["print"], ArgsLim::None,
         |_args, state| {
-            feature::run_print(state);
-            CommandResult::Nominal
+            feature::run_print(state)
         }
     ),
     Command::new(
@@ -229,12 +226,12 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
             match utils::paste_from_clipboard() {
                 Some(contents) => {
                     println!("{}", contents);
+                    CommandResult::Nominal
                 },
                 _ => {
-                    println!("Couldn't paste the clipboard contents");
+                    CommandResult::Error("Couldn't paste the clipboard contents".to_string())
                 }
             }
-            CommandResult::Nominal
         }
     ),
     Command::new(
