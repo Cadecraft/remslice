@@ -56,10 +56,11 @@ tip anothertip C:/Other/Path/anotherthing.txt
 todo C:/MyFolder/todos_list.md
 ```
 
-- `ted_command_prefix` defines your preferred text editor used for editing the todo file (see the `ted` command)
-    - It is recommended to use a graphical editor if you frequently run remslice on your desktop, which is why the default command is `gvim +`
+- `ted_command_template` defines your preferred text editor used for editing the todo file (see the `ted` command)
+    - Define where the todo file is placed as a parameter by using the `\{\}` escape sequence; this allows you to have extra contents at the end as well
+    - It is recommended to use a graphical editor if you frequently run remslice on your desktop, which is why the default command is `gvim + \{\}`
 ```
-ted_command_prefix neovide
+ted_command_template neovide \{\} --maximized
 ```
 
 - `shell_alias` defines an alias to a shell command

@@ -220,12 +220,13 @@ pub fn run_tdn(state: &remstate::RemState) -> CommandResult {
 /// Open a third-party text editor with the todo file and close remslice
 pub fn run_ted(state: &remstate::RemState) -> CommandResult {
     let editor_command_prefix = &state.config.ted_command_prefix;
-    let full_command = format!("{} {}", editor_command_prefix, state.config.todo_path);
+    let editor_command_suffix = &state.config.ted_command_suffix;
+    let full_command = format!("{}{}{}", editor_command_prefix, state.config.todo_path, editor_command_suffix);
     let command_successful = utils::run_shell_command(&full_command);
     if command_successful {
         CommandResult::EndProgram
     } else {
-        CommandResult::Error("The todo editor command failed! Check ted_command_prefix in your .remrc file".to_string())
+        CommandResult::Error("The todo editor command failed! Check ted_command_template in your .remrc file".to_string())
     }
 }
 

@@ -22,6 +22,7 @@ pub struct Config {
     pub score_divby: f32,
     pub score_formula_number: String,
     pub ted_command_prefix: String,
+    pub ted_command_suffix: String,
 }
 
 impl Config {
@@ -36,7 +37,8 @@ impl Config {
             score_negative: Vec::new(),
             score_divby: 5.0,
             score_formula_number: "1".to_string(),
-            ted_command_prefix: "gvim +".to_string(),
+            ted_command_prefix: "gvim + ".to_string(),
+            ted_command_suffix: "".to_string()
         }
     }
 

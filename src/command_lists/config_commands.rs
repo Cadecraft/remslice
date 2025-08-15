@@ -48,10 +48,19 @@ pub static CONFIG_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         }
     ),
     Command::new(
-        utils::string_vec!["ted_command_prefix"], ArgsLim::EndlessLastArg(1),
+        utils::string_vec!["ted_command_template"], ArgsLim::EndlessLastArg(1),
         |args, state| {
-            state.config.ted_command_prefix = args[0].clone();
-            CommandResult::Nominal
+            let parsed = utils::parse_single_param_string(&args[0]);
+            match parsed {
+                Some((prefix, suffix)) => {
+                    state.config.ted_command_prefix = prefix;
+                    state.config.ted_command_suffix = suffix;
+                    CommandResult::Nominal
+                },
+                None => {
+                    CommandResult::Error("ted_command_template must contain an escape sequence \\{\\}".to_string())
+                }
+            }
         }
     ),
     Command::new(

@@ -278,6 +278,15 @@ pub fn process_input(full_input: &str) -> Option<(i32, String)> {
     }
 }
 
+/// Return the (prefix, suffix) of a configuration value string that takes in one parameter
+/// i.e. "nohup gvim + \{\} &" -> ("nohup ", " &")
+pub fn parse_single_param_string(input: &str) -> Option<(String, String)> {
+    match input.split_once("\\{\\}") {
+        Some((prefix, suffix)) => Some((prefix.to_string(), suffix.to_string())),
+        _ => None
+    }
+}
+
 macro_rules! string_vec {
     ($($x:expr),*) => (vec![$($x.to_string()),*]);
 }
