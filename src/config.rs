@@ -1,5 +1,3 @@
-use crate::utils;
-
 /// Stores a tip key/value pair
 struct Pair {
     key: String,
@@ -15,23 +13,21 @@ pub struct ShellAlias {
 
 /// Stores a rem config based on the remrc file
 pub struct Config {
-    remrc_path: String,
     tips: Vec<Pair>,
     shell_aliases: Vec<ShellAlias>,
     rem_aliases: Vec<Pair>,
-    todo_path: String,
+    pub todo_path: String,
     score_positive: Vec<String>,
     score_negative: Vec<String>,
-    score_divby: f32,
-    score_formula_number: String,
-    ted_command_prefix: String,
+    pub score_divby: f32,
+    pub score_formula_number: String,
+    pub ted_command_prefix: String,
 }
 
 impl Config {
-    /// Make a new Config
+    /// Make a new Config (user config will be loaded when commands are executed by remstate)
     pub fn new() -> Config {
-        let mut c = Config {
-            remrc_path: utils::get_config_path(),
+        Config {
             tips: Vec::new(),
             shell_aliases: Vec::new(),
             rem_aliases: Vec::new(),
@@ -41,118 +37,36 @@ impl Config {
             score_divby: 5.0,
             score_formula_number: "1".to_string(),
             ted_command_prefix: "gvim +".to_string(),
-        };
-        c.load();
-        c
+        }
     }
 
-    /// Get the todo path
-    pub fn get_todo_path(&self) -> String {
-        self.todo_path.clone()
+    pub fn add_tip(&mut self, key: &str, value: &str) {
+        self.tips.push(Pair {
+            key: key.to_string(),
+            value: value.to_string()
+        });
     }
 
-    pub fn get_ted_command_prefix(&self) -> &str {
-        &self.ted_command_prefix
+    pub fn add_shell_alias(&mut self, key: &str, command: &str, quit_after_running: bool) {
+        self.shell_aliases.push(ShellAlias {
+            key: key.to_string(),
+            command: command.to_string(),
+            quit_after_running
+        });
     }
 
-    /// Load the config from the remrc
-    pub fn load(&mut self) -> bool {
-        // Read the file
-        match utils::read_file(&self.remrc_path) {
-            Some(contents) => {
-                // Parse contents
-                for line in contents.lines() {
-                    if line.trim().is_empty() || line.trim().chars().nth(0).unwrap() == '#' {
-                        // Empty line or comment
-                        continue;
-                    }
-                    // Parse this line
-                    // TODO: refactor config much like the command refactor (in fact, maybe use the same struct?)
-                    let parsed: Vec<&str> = line.trim().split(" ").collect::<Vec<&str>>();
-                    match parsed[0].trim() {
-                        "tip" if parsed.len() >= 3 => {
-                            // Add a tip
-                            let userpath = utils::trailing_portion_of_input(line, 3);
-                            self.tips.push(Pair {
-                                key: parsed[1].trim().to_string(),
-                                value: userpath
-                            });
-                        },
-                        "shell_alias" if parsed.len() >= 3 => {
-                            // Add a shell alias
-                            let usercommand = utils::trailing_portion_of_input(line, 3);
-                            self.shell_aliases.push(ShellAlias {
-                                key: parsed[1].trim().to_string(),
-                                command: usercommand,
-                                quit_after_running: false
-                            });
-                        },
-                        "shell_alias_quitting" if parsed.len() >= 3 => {
-                            // Add a shell alias that quits after running
-                            let usercommand = utils::trailing_portion_of_input(line, 3);
-                            self.shell_aliases.push(ShellAlias {
-                                key: parsed[1].trim().to_string(),
-                                command: usercommand,
-                                quit_after_running: true
-                            });
-                        },
-                        "rem_alias" if parsed.len() >= 3 => {
-                            // Add a rem alias
-                            let usercommand = utils::trailing_portion_of_input(line, 3);
-                            self.rem_aliases.push(Pair {
-                                key: parsed[1].trim().to_string(),
-                                value: usercommand
-                            });
-                        },
-                        "todo" if parsed.len() >= 2 => {
-                            // Set the todo path
-                            let userpath = utils::trailing_portion_of_input(line, 2);
-                            self.todo_path = userpath;
-                        },
-                        "ted_command_prefix" if parsed.len() >= 2 => {
-                            // Set the todo editor command prefix
-                            let prefix = utils::trailing_portion_of_input(line, 2);
-                            self.ted_command_prefix = prefix;
-                        },
-                        "score_p" if parsed.len() >= 2 => {
-                            // Add a positive score category
-                            let userstring = utils::trailing_portion_of_input(line, 2);
-                            self.score_positive.push(userstring);
-                        },
-                        "score_n" if parsed.len() >= 2 => {
-                            // Add a negative score category
-                            let userstring = utils::trailing_portion_of_input(line, 2);
-                            self.score_negative.push(userstring);
-                        },
-                        "score_divby" if parsed.len() >= 2 => {
-                            // Set the score division by
-                            let userdivby = utils::trailing_portion_of_input(line, 2);
-                            match userdivby.parse::<f32>() {
-                                Ok(res) => {
-                                    self.score_divby = res;
-                                },
-                                _ => {
-                                    // Error
-                                }
-                            };
-                        },
-                        "score_formula_number" if parsed.len() >= 2 => {
-                            // Set the score formula number (technically an identifying string, not a number)
-                            let usernum = utils::trailing_portion_of_input(line, 2);
-                            self.score_formula_number = usernum;
-                        },
-                        _ => {
-                            // None: do not cause errors, so that remslice can operate smoothly
-                        }
-                    }
-                }
-                // Success
-                return true;
-            },
-            _ => {
-                // Failed
-                return false;
-            }
+    pub fn add_rem_alias(&mut self, key: &str, value: &str) {
+        self.rem_aliases.push(Pair {
+            key: key.to_string(),
+            value: value.to_string()
+        });
+    }
+
+    pub fn add_score_factor(&mut self, descr: String, positive: bool) {
+        if positive {
+            self.score_positive.push(descr);
+        } else {
+            self.score_negative.push(descr);
         }
     }
 
@@ -226,15 +140,5 @@ impl Config {
     /// Get all negative score categories
     pub fn score_negative(&self) -> Vec<String> {
         self.score_negative.clone()
-    }
-
-    /// Get the score value to divide by
-    pub fn score_divby(&self) -> f32 {
-        self.score_divby
-    }
-
-    /// Get the score formula number/name
-    pub fn score_formula_number(&self) -> String {
-        self.score_formula_number.clone()
     }
 }

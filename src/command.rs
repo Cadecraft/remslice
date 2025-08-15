@@ -1,17 +1,15 @@
 use crate::remstate;
 use crate::utils;
-use crate::remfetch;
-use crate::feature;
-use std::sync::LazyLock;
 
 pub enum CommandResult {
     Nominal,
+    Error(String),
     EndProgram
 }
 
 pub type CommandRunFn = fn(args: &Vec<String>, state: &mut remstate::RemState) -> CommandResult;
 
-enum ArgsLim {
+pub enum ArgsLim {
     /// There are this many arguments total, and the last of them can be any string with spaces
     /// i.e. if we have 3 args and input is "A B C D   E" -> ["A", "B", "C D   E"]
     EndlessLastArg(i32),
@@ -21,7 +19,7 @@ enum ArgsLim {
     None
 }
 
-struct Command {
+pub struct Command {
     names: Vec<String>,
     /// The number and structure of arguments that the command expects
     args_lim: ArgsLim,
@@ -71,269 +69,18 @@ impl Command {
     }
 }
 
-macro_rules! string_vec {
-    ($($x:expr),*) => (vec![$($x.to_string()),*]);
-}
-
-// Store these commands lazily so they are only accessed on the first call
-static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
-    Command::new(
-        string_vec!["score"], ArgsLim::None,
-        |_args, state| {
-            feature::run_score(state);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["version", "ver"], ArgsLim::None,
-        |_args, state| {
-            println!("REMSLICE ({})", state.rem_data.to_string());
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["remfetch"], ArgsLim::None,
-        |_args, state| {
-            println!("{}", remfetch::remfetch(&state.rem_data));
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["bye"], ArgsLim::None,
-        |_args, _state| {
-            println!("bye!");
-            utils::await_enter();
-            CommandResult::EndProgram
-        }
-    ),
-    Command::new(
-        string_vec!["ping"], ArgsLim::None,
-        |_args, state| {
-            state.ping_count += 1;
-            println!("pong (x{})", state.ping_count);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["help"], ArgsLim::None,
-        |_args, _state| {
-            println!("A detailed list of all commands can be found in `README.md`;");
-            println!("please check it out for the features and cool stuff!");
-            println!("- `exit`/`quit`/`q` - exit immediately");
-            println!("- `version`/`ver` - display simple version information");
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["wipe", "clear"], ArgsLim::None,
-        |_args, _state| {
-            // Print enough times that the screen gets filled
-            for _i in 0..100 {
-                println!();
-            }
-            println!("The screen is clear!");
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["pwd"], ArgsLim::None,
-        |_args, _state| {
-            println!("{}", utils::get_current_working_dir());
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tip", "b"], ArgsLim::EndlessLastArg(2),
-        |args, state| {
-            // Tip and grep
-            feature::run_tip(state, &args[0], Some(&args[1]));
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tip", "b"], ArgsLim::EndlessLastArg(1),
-        |args, state| {
-            // Tip only
-            feature::run_tip(state, &args[0], None);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tip-ls"], ArgsLim::None,
-        |_args, state| {
-            println!("All tips added:");
-            println!("{}", state.config.display_tips());
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["grep"], ArgsLim::EndlessLastArg(1),
-        |args, state| {
-            feature::run_grep(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["line"], ArgsLim::Fixed(1),
-        |args, state| {
-            feature::run_line(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tda"], ArgsLim::EndlessLastArg(1),
-        |args, state| {
-            feature::run_tda(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdt"], ArgsLim::None,
-        |_args, state| {
-            feature::run_tdt(state, 1);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdt"], ArgsLim::Fixed(1),
-        |args, state| {
-            // TODO: refactor this kind of check into something on the Command level?
-            // (i.e. every Command, in run, would type-check its argument)
-            match args[0].parse::<u32>() {
-                Ok(count) => {
-                    feature::run_tdt(state, count);
-                },
-                _ => {
-                    println!("Please enter a non-negative number");
-                }
-            };
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdt2"], ArgsLim::None,
-        |_args, state| {
-            // A specific command name for backwards compatability only
-            feature::run_tdt(state, 2);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdc"], ArgsLim::Fixed(1),
-        |args, state| {
-            feature::run_tdc(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tde"], ArgsLim::EndlessLastArg(1),
-        |args, state| {
-            feature::run_tde(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdae"], ArgsLim::EndlessLastArg(1),
-        |args, state| {
-            feature::run_tdae(state, &args[0]);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["tdn"], ArgsLim::None,
-        |_args, state| {
-            feature::run_tdn(state);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["ted"], ArgsLim::None,
-        |_args, state| {
-            feature::run_ted(state)
-        }
-    ),
-    Command::new(
-        string_vec!["al"], ArgsLim::Fixed(1),
-        |args, state| {
-            // Return the result from the alias, since aliases might be quitting
-            feature::run_al(state, &args[0])
-        }
-    ),
-    Command::new(
-        string_vec!["al-ls"], ArgsLim::None,
-        |_args, state| {
-            feature::run_al_ls(state);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["print"], ArgsLim::None,
-        |_args, state| {
-            feature::run_print(state);
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["copy", "y"], ArgsLim::None,
-        |_args, state| {
-            utils::copy_to_clipboard(&state.to_copy_val);
-            if state.to_copy_val.chars().count() > 6 {
-                println!("Yanked string starting with '{}'", &state.to_copy_val[..4]);
-            } else {
-                println!("Yanked string '{}'", state.to_copy_val);
-            }
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["paste", "p"], ArgsLim::None,
-        |_args, _state| {
-            match utils::paste_from_clipboard() {
-                Some(contents) => {
-                    println!("{}", contents);
-                },
-                _ => {
-                    println!("Couldn't paste the clipboard contents");
-                }
-            }
-            CommandResult::Nominal
-        }
-    ),
-    Command::new(
-        string_vec!["q", "exit", "quit"], ArgsLim::None,
-        |_args, _state| {
-            CommandResult::EndProgram
-        }
-    ),
-    Command::new(
-        string_vec!["time"], ArgsLim::None,
-        |_args, state| {
-            let output = utils::get_time_formatted();
-            state.to_copy_val = output.clone();
-            println!("{}", output);
-            CommandResult::Nominal
-        }
-    ),
-]});
-
-/// Return the number of space-separated arguments (not including the command name) and the command name
-fn process_input(full_input: &str) -> Option<(i32, String)> {
-    // TODO: impl ignoring spaces and keeping case within quotes, handling backslashes, etc.
-    let splitted: Vec<&str> = full_input.split(' ').collect::<Vec<&str>>();
-    match splitted.len() {
-        0 => return None,
-        _ => Some(((splitted.len() as i32) - 1, splitted[0].to_string()))
-    }
-}
-
 /// Find the matching command based on the user's parsed input and run it
-pub fn run_command(full_input: &str, state: &mut remstate::RemState) -> Option<CommandResult> {
-    let processed = process_input(&full_input);
+pub fn run_command(
+    full_input: &str,
+    state: &mut remstate::RemState,
+    command_list: &Vec<Command>
+) -> Option<CommandResult> {
+    let processed = utils::process_input(&full_input);
     if processed.is_none() {
         return None;
     }
     let (num_args, command_name) = processed.unwrap();
-    let found = COMMAND_LIST.iter().find(|&x| x.matches(&command_name, num_args));
+    let found = command_list.iter().find(|&x| x.matches(&command_name, num_args));
     match found {
         Some(command) => {
             // Run the command, parsing the input properly for the number of arguments

@@ -4,7 +4,6 @@ use crate::utils;
 /// Fetch the info
 pub fn remfetch(current_remdata: &remdata::RemData) -> String {
     let mut res: String = String::new();
-    // TODO: impl more details?
     // Like neofetch/fastfetch, but for remslice
     // Meant to look like an orange slice
     let current_morning = if current_remdata.get_m() { "[success]" } else { "[failure]" };
