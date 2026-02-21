@@ -90,8 +90,8 @@ pub fn run_line(state: &remstate::RemState, line_num: &str) -> CommandResult {
     }
 }
 
+/// Append to the end of todos
 pub fn run_tda(state: &remstate::RemState, todo_string: &str) -> CommandResult {
-    // Append to the end of todos
     if utils::append_to_file(&state.config.todo_path, &format!("- {}", todo_string)) {
         println!("Todo added successfully");
         CommandResult::Nominal
@@ -204,6 +204,11 @@ pub fn run_tdae(state: &remstate::RemState, new_todo: &str) -> CommandResult {
     } else {
         CommandResult::Error("Topmost todo could not be edited".to_string())
     }
+}
+
+/// Append to the end of todos, prefaced by the time
+pub fn run_tdat(state: &remstate::RemState, todo_string: &str) -> CommandResult {
+    run_tda(state, &format!("{} {}", utils::get_time_formatted(), todo_string))
 }
 
 /// Start a new day as a header in the todo list

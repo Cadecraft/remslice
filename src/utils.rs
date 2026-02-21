@@ -135,16 +135,19 @@ fn get_time() -> chrono::DateTime<chrono::Local> {
     chrono::Local::now()
 }
 
-/// Get the current local time, formatted
+/// Get the current local date and time, formatted (e.g. 2020/01/01 20:05)
+pub fn get_date_time_formatted() -> String {
+    get_time().format("%Y/%m/%d %H:%M").to_string()
+}
+
+/// Get the current local time, formatted (e.g. 20:05)
 pub fn get_time_formatted() -> String {
-    let thetime = get_time();
-    thetime.format("%Y/%m/%d %H:%M").to_string()
+    get_time().format("%H:%M").to_string()
 }
 
 /// Get the current date only, formatted
 pub fn get_date_only_formatted() -> String {
-    let thetime = get_time();
-    thetime.format("%Y/%m/%d").to_string()
+    get_time().format("%Y/%m/%d").to_string()
 }
 
 /// Get the current operating system
