@@ -32,11 +32,8 @@ fn main() {
     loop {
         let user_input = utils::get_user_input_line();
         let res = rem.respond_to_input(user_input, 0);
-        match res {
-            Some(command::CommandResult::EndProgram) => {
-                break;
-            },
-            _ => ()
+        if let Some(command::CommandResult::EndProgram) = res {
+            break;
         }
     }
     // End

@@ -62,7 +62,7 @@ pub fn run_grep(state: &remstate::RemState, query: &str) {
     println!("Searching...");
     for (i, line) in state.file_loaded.lines().enumerate() {
         // Match?
-        if line.to_lowercase().find(&query.to_lowercase()).is_some() {
+        if line.to_lowercase().contains(&query.to_lowercase()) {
             // Found
             println!("   {:5} {}", i + 1, line);
             success = true;
@@ -231,7 +231,7 @@ pub fn run_ted(state: &remstate::RemState) -> CommandResult {
 
 /// Run a shell alias
 pub fn run_al(state: &remstate::RemState, alias: &str) -> CommandResult {
-    match state.config.get_shell_alias(&alias) {
+    match state.config.get_shell_alias(alias) {
         Some(alias) => {
             let command_successful = utils::run_shell_command(&alias.command);
             // Only quit if successful AND desired

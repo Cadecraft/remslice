@@ -16,7 +16,7 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     Command::new(
         utils::string_vec!["version", "ver"], ArgsLim::None,
         |_args, state| {
-            println!("REMSLICE ({})", state.rem_data.to_string());
+            println!("REMSLICE ({})", state.rem_data);
             CommandResult::Nominal
         }
     ),

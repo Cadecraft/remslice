@@ -73,13 +73,9 @@ impl Command {
 pub fn run_command(
     full_input: &str,
     state: &mut remstate::RemState,
-    command_list: &Vec<Command>
+    command_list: &[Command]
 ) -> Option<CommandResult> {
-    let processed = utils::process_input(&full_input);
-    if processed.is_none() {
-        return None;
-    }
-    let (num_args, command_name) = processed.unwrap();
+    let (num_args, command_name) = utils::process_input(full_input)?;
     let found = command_list.iter().find(|&x| x.matches(&command_name, num_args));
     match found {
         Some(command) => {

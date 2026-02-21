@@ -27,7 +27,7 @@ impl RemState {
                     if Self::is_empty_or_comment(line) {
                         continue;
                     }
-                    let res = command::run_command(&line, self, command_lists::get_config_commands());
+                    let res = command::run_command(line, self, command_lists::get_config_commands());
                     match res {
                         Some(command::CommandResult::Error(descr)) => {
                             println!("Configuration error in .remrc: {}", descr);
