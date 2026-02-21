@@ -146,6 +146,9 @@ rem_alias h al ffc
 - `tip-ls` - list all available tips and their file paths
 - `grep` - search through the currently loaded file for lines containing a specific term (case-insensitive; instantly displays)
 - `line {line number}` - print the given line of the currently loaded file
+- `al {shell alias}` - run the command defined by a certain shell alias in the config file
+- `al-ls` - list all available shell and rem aliases and what they refer to
+### Todos
 - `tda` - "todo append": add an entry into the todo file specified in `remrc.txt` (entries are automatically markdown bulleted with a dash)
 - `tdt` - "todo top": display the top (most recent) entries in the todo file (up until the most recent `##` header); display lowercase alphabetical IDs alongside each entry
 - `tdt2` - "todo top x2": display more of the top todo entries (up until the 2nd most recent `##` header)
@@ -154,9 +157,8 @@ rem_alias h al ffc
 - `tde` - "todo edit": edit the topmost todo entry by replacing it, used for making a correction
 - `ted` - "todo editor": launch a text editor for doing more complex reorganization of your todos
 - `tdae` - "todo append-edit": append text to the topmost todo entry, used for making a correction
+- `tdat` - "todo append-time": add a todo entry prefaced by the current time
 - `tdn` - "todo new day": insert the current date as a new `##` header in the todo file
-- `al {shell alias}` - run the command defined by a certain shell alias in the config file
-- `al-ls` - list all available shell and rem aliases and what they refer to
 
 ## More
 
