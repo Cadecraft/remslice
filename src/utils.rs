@@ -6,10 +6,6 @@ use std::fs;
 use std::env::consts::OS;
 use std::process::Command;
 
-// Keep the line ending '\n' for consistency in editing files
-#[allow(dead_code)]
-const LINE_ENDING: &'static str = "\n";
-
 /// Get the user's input
 pub fn get_user_input_line() -> String {
     print!("> ");
