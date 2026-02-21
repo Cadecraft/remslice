@@ -27,7 +27,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new(VERSION, "2025/08/08", true);
+    let rem_data = remdata::RemData::new(VERSION, "2026/02/20", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately
