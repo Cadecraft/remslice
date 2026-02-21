@@ -72,12 +72,8 @@ impl Config {
 
     /// Get the value of a tip starting with a key
     pub fn get_tip_value(&self, start: &str) -> Option<String> {
-        for tip in &self.tips {
-            if tip.key.starts_with(start) {
-                return Some(tip.value.clone());
-            }
-        }
-        return None;
+        self.tips.iter().find(|tip| tip.key.starts_with(start))
+            .map(|tip| tip.value.clone())
     }
 
     /// Display all tips
@@ -86,27 +82,18 @@ impl Config {
         for tip in &self.tips {
             res.push_str(&format!("   {} : {}\n", tip.key, tip.value));
         }
-        return res;
+        res
     }
 
     /// Get the information about a shell alias matching a key
     pub fn get_shell_alias(&self, search_for: &str) -> Option<ShellAlias> {
-        for alias in &self.shell_aliases {
-            if alias.key == search_for {
-                return Some(alias.clone());
-            }
-        }
-        return None;
+        self.shell_aliases.iter().find(|alias| alias.key == search_for).cloned()
     }
 
     /// Get the value of a rem alias matching a key
     pub fn get_rem_alias_value(&self, search_for: &str) -> Option<String> {
-        for alias in &self.rem_aliases {
-            if alias.key == search_for {
-                return Some(alias.value.clone());
-            }
-        }
-        return None;
+        self.rem_aliases.iter().find(|alias| alias.key == search_for)
+            .map(|alias| alias.value.clone())
     }
 
     /// Display all shell aliases
@@ -120,7 +107,7 @@ impl Config {
                 alias.command
             ));
         }
-        return res;
+        res
     }
 
     /// Display all rem aliases
@@ -129,7 +116,7 @@ impl Config {
         for alias in &self.rem_aliases {
             res.push_str(&format!("   {} : {}\n", alias.key, alias.value));
         }
-        return res;
+        res
     }
 
     /// Get all positive score categories

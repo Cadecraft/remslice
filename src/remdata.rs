@@ -1,3 +1,5 @@
+use std::fmt;
+
 /// Stores the REM data
 pub struct RemData {
     recent_version: String,
@@ -13,16 +15,6 @@ impl RemData {
             edit_date: edit_date.to_string(),
             morning
         }
-    }
-
-    /// Represent the Data as a one-line string
-    pub fn to_string(&self) -> String {
-        format!(
-            "R: v{}, E: {}, M: {}",
-            self.recent_version,
-            self.edit_date,
-            if self.morning { "[success]" } else { "[failure]" }
-        )
     }
 
     /// Clone
@@ -47,5 +39,17 @@ impl RemData {
     /// Get the morning value
     pub fn get_m(&self) -> bool {
         self.morning
+    }
+}
+
+impl fmt::Display for RemData {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "R: v{}, E: {}, M: {}",
+            self.recent_version,
+            self.edit_date,
+            if self.morning { "[success]" } else { "[failure]" }
+        )
     }
 }

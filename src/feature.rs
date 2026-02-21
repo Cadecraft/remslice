@@ -62,7 +62,7 @@ pub fn run_grep(state: &remstate::RemState, query: &str) {
     println!("Searching...");
     for (i, line) in state.file_loaded.lines().enumerate() {
         // Match?
-        if line.to_lowercase().find(&query.to_lowercase()).is_some() {
+        if line.to_lowercase().contains(&query.to_lowercase()) {
             // Found
             println!("   {:5} {}", i + 1, line);
             success = true;
@@ -90,8 +90,8 @@ pub fn run_line(state: &remstate::RemState, line_num: &str) -> CommandResult {
     }
 }
 
+/// Append to the end of todos
 pub fn run_tda(state: &remstate::RemState, todo_string: &str) -> CommandResult {
-    // Append to the end of todos
     if utils::append_to_file(&state.config.todo_path, &format!("- {}", todo_string)) {
         println!("Todo added successfully");
         CommandResult::Nominal
@@ -206,6 +206,11 @@ pub fn run_tdae(state: &remstate::RemState, new_todo: &str) -> CommandResult {
     }
 }
 
+/// Append to the end of todos, prefaced by the time
+pub fn run_tdat(state: &remstate::RemState, todo_string: &str) -> CommandResult {
+    run_tda(state, &format!("{} {}", utils::get_time_formatted(), todo_string))
+}
+
 /// Start a new day as a header in the todo list
 pub fn run_tdn(state: &remstate::RemState) -> CommandResult {
     // Append the day to the end of todos
@@ -231,7 +236,7 @@ pub fn run_ted(state: &remstate::RemState) -> CommandResult {
 
 /// Run a shell alias
 pub fn run_al(state: &remstate::RemState, alias: &str) -> CommandResult {
-    match state.config.get_shell_alias(&alias) {
+    match state.config.get_shell_alias(alias) {
         Some(alias) => {
             let command_successful = utils::run_shell_command(&alias.command);
             // Only quit if successful AND desired

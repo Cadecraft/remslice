@@ -23,21 +23,19 @@ mod command_lists;
     test installing and copying on linux
 */
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 fn main() {
     // Initialize
-    let rem_data = remdata::RemData::new("0.6.2", "2025/08/08", true);
+    let rem_data = remdata::RemData::new(VERSION, "2026/02/20", true);
     let mut rem = rem::Rem::new(rem_data.clone());
 
     // Begin the input loop immediately
     loop {
         let user_input = utils::get_user_input_line();
         let res = rem.respond_to_input(user_input, 0);
-        match res {
-            Some(command::CommandResult::EndProgram) => {
-                break;
-            },
-            _ => ()
+        if let Some(command::CommandResult::EndProgram) = res {
+            break;
         }
     }
-    // End
 }

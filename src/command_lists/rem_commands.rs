@@ -16,7 +16,7 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     Command::new(
         utils::string_vec!["version", "ver"], ArgsLim::None,
         |_args, state| {
-            println!("REMSLICE ({})", state.rem_data.to_string());
+            println!("REMSLICE ({})", state.rem_data);
             CommandResult::Nominal
         }
     ),
@@ -178,6 +178,12 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
         }
     ),
     Command::new(
+        utils::string_vec!["tdat"], ArgsLim::EndlessLastArg(1),
+        |args, state| {
+            feature::run_tdat(state, &args[0])
+        }
+    ),
+    Command::new(
         utils::string_vec!["tdn"], ArgsLim::None,
         |_args, state| {
             feature::run_tdn(state)
@@ -243,7 +249,7 @@ pub static REM_COMMANDS: LazyLock<Vec<Command>> = LazyLock::new(|| {vec![
     Command::new(
         utils::string_vec!["time"], ArgsLim::None,
         |_args, state| {
-            let output = utils::get_time_formatted();
+            let output = utils::get_date_time_formatted();
             state.to_copy_val = output.clone();
             println!("{}", output);
             CommandResult::Nominal
